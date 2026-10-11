@@ -147,3 +147,51 @@ h2 { font-size: clamp(2rem, 4vw, 3.1rem); }
 @media (max-width: 960px) { .nav__links, .nav__cta { display: none; } .burger { display: block; } .hero__inner, .founder__inner, .contact__inner { grid-template-columns: 1fr; } .hero__inner { gap: 70px; } .loop { max-width: 340px; } .services__grid, .why__grid { grid-template-columns: repeat(2, 1fr); } .founder__inner { gap: 60px; } .founder__media { max-width: 420px; } }
 @media (max-width: 640px) { .section { padding: 84px 0; } .services__grid, .why__grid { grid-template-columns: 1fr; } .compare__head { display: none; } .compare__row { grid-template-columns: 1fr; gap: 10px; padding: 24px 8px; } .compare__usual small { display: block; font-size: .7rem; letter-spacing: .15em; text-transform: uppercase; margin-bottom: 2px; } .founder__badge { right: 10px; } .contact__card { padding: 28px; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } html { scroll-behavior: auto; } }
+
+/* Screenshot-led content sections */
+.content-section { background: #fff; }
+.content-section .section-head { max-width: 650px; margin-bottom: 48px; }
+.section-lead { max-width: 620px; margin-top: 18px; color: var(--muted); font-size: 1.08rem; }
+.services-new { border-top: 20px solid #202322; }
+.service-options { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+.service-option { border: 1px solid #1b2a3e; padding: 30px 28px 24px; }
+.service-option + .service-option { border-color: var(--line); }
+.service-option .eyebrow { margin-bottom: 16px; color: #a4511e; font-size: .7rem; }
+.service-option h3 { font-size: 1.65rem; margin-bottom: 14px; }
+.service-option > p { color: var(--muted); margin-bottom: 24px; }
+.service-rows { border-top: 1px solid #cfd5de; }
+.service-row { display: grid; grid-template-columns: 92px 1fr; gap: 14px; padding: 12px 0; border-bottom: 1px solid #cfd5de; color: var(--muted); font-size: .9rem; }
+.service-row strong { color: #8e96a2; font-weight: 600; }
+.why-new { border-top: 20px solid #202322; }
+.why-new .section-head { margin-bottom: 36px; }
+.india-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 20px; }
+.india-stat { border-top: 2px solid var(--navy); padding: 18px 0 20px; min-height: 150px; }
+.india-stat__big { color: #bd541e; font-family: var(--serif); font-size: 2.5rem; line-height: 1; margin-bottom: 8px; }
+.india-stat h3 { font-family: var(--sans); font-size: 1rem; margin-bottom: 5px; }
+.india-stat p { color: var(--muted); font-size: .9rem; max-width: 330px; }
+.sources { margin-top: 20px; color: var(--muted); font-size: .75rem; line-height: 1.55; }
+.founder-new { border-top: 20px solid #202322; }
+.founder-heading { margin-bottom: 34px; }
+.founder-profile { display: grid; grid-template-columns: 290px 1fr; gap: 56px; align-items: start; }
+.founder-new .founder__frame { border-radius: 0; aspect-ratio: 1 / 1.25; box-shadow: none; }
+.founder-new .founder__media::before, .founder-new .founder__badge { display: none; }
+.founder-new .founder__caption { max-width: 300px; }
+.founder-new .founder__text { padding-top: 440px; }
+.founder-new .founder__text h3 { font-size: 2.1rem; }
+.founder-new .founder__lead { max-width: 520px; }
+.chapters { display: grid; grid-template-columns: repeat(2, 1fr); gap: 34px 36px; margin: 52px 0 54px 18px; }
+.chapter { position: relative; border-top: 1px solid var(--line); padding: 30px 24px 0; }
+.chapter::before { content: ""; position: absolute; top: -9px; left: -25px; width: 16px; height: 16px; border: 2px solid var(--accent); border-radius: 50%; background: #fff; }
+.chapter span { color: var(--muted); font-size: .7rem; letter-spacing: .15em; text-transform: uppercase; }
+.chapter h3 { font-size: 1.45rem; margin: 12px 0 10px; }
+.chapter p { color: var(--muted); max-width: 370px; font-size: .95rem; }
+.capabilities { display: grid; grid-template-columns: repeat(2, 1fr); gap: 34px 36px; }
+.capability .eyebrow { margin-bottom: 10px; font-size: .7rem; }
+.capability p { padding: 10px 0; border-bottom: 1px solid var(--line); font-size: .9rem; }
+@media (max-width: 700px) {
+  .service-options, .india-stats, .founder-profile, .chapters, .capabilities { grid-template-columns: 1fr; }
+  .founder-profile { gap: 28px; }
+  .founder-new .founder__text { padding-top: 0; }
+  .founder-new .founder__media { max-width: 290px; }
+  .chapters { margin-left: 18px; }
+}

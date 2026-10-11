@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useScroll, useSpring } from "framer-motion";
 import "./App.css";
 
-const CONTACT_EMAIL = "contact@yourdomain.com";
+const CONTACT_EMAIL = "contact@yourdomain.com"; // Keeping the contact email for reference
 const NAV_LINKS = [
   { id: "approach", label: "Approach" },
   { id: "services", label: "Services" },
