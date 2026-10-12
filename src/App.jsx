@@ -46,6 +46,12 @@ const ease = [0.22, 1, 0.36, 1];
 const fadeUp = { hidden: { opacity: 0, y: 28 }, show: { opacity: 1, y: 0, transition: { duration: 0.7, ease } } };
 const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.1 } } };
 
+function navigateTo(path) {
+  window.history.pushState({}, "", path);
+  window.dispatchEvent(new PopStateEvent("popstate"));
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
 function Reveal({ children, className = "", variants = fadeUp }) {
   return <motion.div className={className} variants={variants} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.15 }}>{children}</motion.div>;
 }
@@ -54,11 +60,11 @@ function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   useEffect(() => { const onScroll = () => setScrolled(window.scrollY > 30); window.addEventListener("scroll", onScroll); return () => window.removeEventListener("scroll", onScroll); }, []);
-  return <motion.header className={`nav ${scrolled || open ? "nav--scrolled" : ""}`} initial={{ y: -90 }} animate={{ y: 0 }} transition={{ duration: 0.7, ease }}><div className="container nav__inner"><a href="#approach" className="logo" aria-label="Incubr home"><span className="logo__word">INCU</span><span className="logo__mark">a</span><span className="logo__word">R</span></a><nav className="nav__links">{NAV_LINKS.map((link) => <a key={link.id} href={`#${link.id}`}>{link.label}</a>)}</nav><button className={`burger ${open ? "is-open" : ""}`} onClick={() => setOpen(!open)} aria-label="Toggle menu"><span /><span /></button></div>{open && <nav className="mobile-menu">{NAV_LINKS.map((link) => <a key={link.id} href={`#${link.id}`} onClick={() => setOpen(false)}>{link.label}</a>)}</nav>}</motion.header>;
+  return <motion.header className={`nav ${scrolled || open ? "nav--scrolled" : ""}`} initial={{ y: -90 }} animate={{ y: 0 }} transition={{ duration: 0.7, ease }}><div className="container nav__inner"><a href="#top" className="logo" aria-label="Incubr home" onClick={(event) => { event.preventDefault(); navigateTo("/"); }}><span className="logo__word">INCU</span><span className="logo__mark">a</span><span className="logo__word">R</span></a><nav className="nav__links">{NAV_LINKS.map((link) => <a key={link.id} href={`/#${link.id}`}>{link.label}</a>)}</nav><button className="nav__book" onClick={() => navigateTo("/book-a-call")}>Book a Call <span aria-hidden="true">→</span></button><button className={`burger ${open ? "is-open" : ""}`} onClick={() => setOpen(!open)} aria-label="Toggle menu"><span /><span /></button></div>{open && <nav className="mobile-menu">{NAV_LINKS.map((link) => <a key={link.id} href={`/#${link.id}`} onClick={() => setOpen(false)}>{link.label}</a>)}<button className="nav__book mobile-book" onClick={() => { setOpen(false); navigateTo("/book-a-call"); }}>Book a Call <span aria-hidden="true">→</span></button></nav>}</motion.header>;
 }
 
 function Hero() {
-  return <section id="top" className="hero-new"><div className="hero-new__glow" /><div className="container hero-new__inner"><Reveal className="hero-new__content"><span className="eyebrow">Incubr Tech Pvt Ltd · Sprint incubation and India market entry</span><h1>From idea to<br />market-ready.<br />From global<br />brand to India.</h1><p>Incubr takes consumer products <strong>from zero to one</strong>, and brings global brands into India, one market at a time.</p><div className="hero-new__actions"><a href="#services" className="btn">Book an India Readiness Call <span aria-hidden="true">→</span></a><a href="#services" className="btn btn--ghost">Explore services</a></div></Reveal><Reveal className="hero-new__orb" variants={{ hidden: { opacity: 0, scale: .7 }, show: { opacity: 1, scale: 1, transition: { duration: 1.1, ease } } }}><div className="orb-core"><span>ONE<br />MARKET</span></div><div className="orb-ring orb-ring--one" /><div className="orb-ring orb-ring--two" /><span className="orb-label orb-label--one">Validate</span><span className="orb-label orb-label--two">Build</span><span className="orb-label orb-label--three">Launch</span></Reveal><div className="hero-new__proof"><span>9 services under one roof</span><span>3 phases: validate, build or localize, launch</span><span>Led by a former country lead for a major brand in India and the UAE</span></div></div></section>;
+  return <section id="top" className="hero-new"><div className="hero-new__glow" /><div className="container hero-new__inner"><Reveal className="hero-new__content"><span className="eyebrow">Incubr Tech Pvt Ltd · Sprint incubation and India market entry</span><h1>From idea to<br />market-ready.<br />From global<br />brand to India.</h1><p>Incubr takes consumer products <strong>from zero to one</strong>, and brings global brands into India, one market at a time.</p><div className="hero-new__actions"><button className="btn" onClick={() => navigateTo("/book-a-call")}>Book an India Readiness Call <span aria-hidden="true">→</span></button><a href="#services" className="btn btn--ghost">Explore services <span aria-hidden="true">→</span></a></div></Reveal><Reveal className="hero-new__orb" variants={{ hidden: { opacity: 0, scale: .7 }, show: { opacity: 1, scale: 1, transition: { duration: 1.1, ease } } }}><div className="orb-core"><span>ONE<br />MARKET</span></div><div className="orb-ring orb-ring--one" /><div className="orb-ring orb-ring--two" /><span className="orb-label orb-label--one">Validate</span><span className="orb-label orb-label--two">Build</span><span className="orb-label orb-label--three">Launch</span></Reveal><div className="hero-new__proof"><span>9 services under one roof</span><span>3 phases: validate, build or localize, launch</span><span>Led by a former country lead for a major brand in India and the UAE</span></div></div></section>;
 }
 
 function Approach() {
@@ -77,8 +83,34 @@ function Founder() {
   return <section id="founder" className="section content-section founder-new"><div className="container"><Reveal className="founder-heading"><span className="eyebrow">Founder</span><h2>Led by an operator<br />who has done it before</h2></Reveal><div className="founder-profile"><Reveal className="founder__media"><div className="founder__frame"><img src="/founder.jpg" alt="Gopal Batra, Founder of Incubr Tech" loading="lazy" decoding="async" /></div><p className="founder__caption">Former country lead for a major brand, India and the UAE</p></Reveal><Reveal className="founder__text"><h3>Gopal Batra</h3><p className="founder__role">Founder, Incubr Tech Pvt Ltd</p><p className="founder__lead">A brand builder and country operator who has spent his career on the hardest stretch for any brand: the first mile in a new market.</p></Reveal></div><Reveal className="chapters" variants={stagger}>{CHAPTERS.map(([label, title, text]) => <motion.article className="chapter" key={title} variants={fadeUp}><span>{label}</span><h3>{title}</h3><p>{text}</p></motion.article>)}</Reveal><div className="capabilities">{CAPABILITIES.map(([title, items]) => <div className="capability" key={title}><span className="eyebrow">{title}</span>{items.map((item) => <p key={item}>{item}</p>)}</div>)}</div></div></section>;
 }
 
+function BookingPage() {
+  const [status, setStatus] = useState("idle");
+  const [error, setError] = useState("");
+  async function submitBooking(event) {
+    event.preventDefault();
+    setStatus("loading");
+    setError("");
+    const form = new FormData(event.currentTarget);
+    const payload = Object.fromEntries(form.entries());
+    try {
+      const response = await fetch("/api/book-call", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.message || "We could not submit your request.");
+      setStatus("success");
+      event.currentTarget.reset();
+    } catch (submitError) {
+      setStatus("error");
+      setError(submitError.message);
+    }
+  }
+  return <div className="booking-page"><Navbar /><main className="booking-main"><div className="container booking-layout"><Reveal className="booking-intro"><span className="eyebrow">Book a call</span><h1>Book an<br />India Readiness<br />Call</h1><p>A 30-minute consultation to understand your brand, goals and India opportunity, and see how Incubr can help.</p><div className="booking-benefits"><div><span className="benefit-icon">▤</span><span><strong>Strategic discussion</strong>Understand your business, category and India opportunity</span></div><div><span className="benefit-icon">▥</span><span><strong>Practical insights</strong>Get an initial view on market potential, channels and go-to-market approach</span></div><div><span className="benefit-icon">♧</span><span><strong>Next steps</strong>See how Incubr can support you and agree on a clear way forward</span></div></div></Reveal><Reveal className="booking-card"><span className="eyebrow">Book a call</span><h2>Tell us a bit about you</h2>{status === "success" ? <div className="booking-success"><span>✓</span><h3>Request received</h3><p>Thank you. We will be in touch shortly to schedule your call.</p><button type="button" className="btn" onClick={() => navigateTo("/")}>Back to Incubr</button></div> : <form onSubmit={submitBooking}><div className="form-grid"><label>Full name *<input name="fullName" required placeholder="Your name" /></label><label>Business email *<input name="email" required type="email" placeholder="you@company.com" /></label><label>Company name *<input name="company" required placeholder="Your company name" /></label><label>What best describes you? *<select name="profile" required defaultValue=""><option value="" disabled>Select an option</option><option>Global brand</option><option>Founder / new product</option><option>Investor / partner</option><option>Other</option></select></label><label className="form-full">Anything specific you'd like to discuss? <textarea name="message" rows="4" maxLength="300" placeholder="Product category, target customer, current stage, key questions" /></label></div>{status === "error" && <p className="form-error">{error}</p>}<button className="btn booking-submit" type="submit" disabled={status === "loading"}>{status === "loading" ? "Sending..." : "Book My Call →"}</button><small className="form-note">🔒 Your information is secure and will only be used to schedule this call.</small></form>}</Reveal></div></main></div>;
+}
+
 export default function App() {
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, { stiffness: 120, damping: 30 });
+  const [path, setPath] = useState(window.location.pathname);
+  useEffect(() => { const onPopState = () => setPath(window.location.pathname); window.addEventListener("popstate", onPopState); return () => window.removeEventListener("popstate", onPopState); }, []);
+  if (path === "/book-a-call") return <BookingPage />;
   return <><motion.div className="progress" style={{ scaleX }} /><Navbar /><main><Hero /><Approach /><Services /><WhyIndia /><Founder /></main></>;
 }
