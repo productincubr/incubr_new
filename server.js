@@ -10,6 +10,7 @@ const dataDir = join(root, "data");
 const bookingsFile = join(dataDir, "bookings.jsonl");
 const distDir = join(root, "dist");
 const allowedProfiles = new Set(["Global brand", "Founder / new product", "Investor / partner", "Other"]);
+const allowedTimelines = new Set(["Within 30 days", "1-3 months", "3-6 months", "Just exploring"]);
 
 if (!existsSync(dataDir)) mkdirSync(dataDir, { recursive: true });
 
@@ -45,9 +46,10 @@ async function handleBooking(request, response) {
       email: clean(body.email, 160).toLowerCase(),
       company: clean(body.company, 160),
       profile: clean(body.profile, 80),
+      timeline: clean(body.timeline, 80),
       message: clean(body.message, 300),
     };
-    if (!booking.fullName || !booking.company || !booking.email || !booking.profile) {
+    if (!booking.fullName || !booking.company || !booking.email || !booking.profile || !booking.timeline) {
       return sendJson(response, 400, { message: "Please complete all required fields." });
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(booking.email)) {
@@ -55,6 +57,9 @@ async function handleBooking(request, response) {
     }
     if (!allowedProfiles.has(booking.profile)) {
       return sendJson(response, 400, { message: "Please choose a valid profile." });
+    }
+    if (!allowedTimelines.has(booking.timeline)) {
+      return sendJson(response, 400, { message: "Please choose a valid timeline." });
     }
     await appendFile(bookingsFile, `${JSON.stringify({ ...booking, createdAt: new Date().toISOString() })}\n`, "utf8");
     return sendJson(response, 201, { ok: true });
