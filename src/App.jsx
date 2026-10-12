@@ -14,6 +14,12 @@ const COMPARISON = [
   ["Pace", "Plan for a year, then launch", "Execute, learn and adjust in short sprints"],
   ["Success", "A launch event", "Product-market fit, proven in real sales"],
 ];
+const APPROACH_STEPS = [
+  ["1", "Pick one market", "One city, one channel, one customer we can win."],
+  ["2", "Launch a hero range", "Fewer products, with an India-fit price and pack."],
+  ["3", "Execute and learn", "Micro execution every week. Fix what doesn't sell."],
+  ["4", "Prove fit, then scale", "Product-market fit first. New cities and channels after."],
+];
 const SERVICE_OPTIONS = [
   ["For global brands", "India market entry", "A partner on the ground from first insight to first sale in India.", [["Validate", "Market validation, channel research, competitive positioning"], ["Localize", "Product localization, CMO and strategic sourcing, quality and compliance"], ["Launch", "Brand and packaging adaptation, go-to-market and sales, market enablement"]]],
   ["For founders and new products", "Sprint incubation", "A one-stop sprint that takes a product idea to market-ready.", [["Validate", "Product validation, category validation, marketplace research"], ["Build", "Competitive positioning, product development, CMO management"], ["Launch-ready", "Bespoke brand and packaging, quality assurance, go-to-market"]]],
@@ -51,8 +57,12 @@ function Navbar() {
   return <motion.header className={`nav ${scrolled || open ? "nav--scrolled" : ""}`} initial={{ y: -90 }} animate={{ y: 0 }} transition={{ duration: 0.7, ease }}><div className="container nav__inner"><a href="#approach" className="logo">INCU<span>B</span>R</a><nav className="nav__links">{NAV_LINKS.map((link) => <a key={link.id} href={`#${link.id}`}>{link.label}</a>)}</nav><button className={`burger ${open ? "is-open" : ""}`} onClick={() => setOpen(!open)} aria-label="Toggle menu"><span /><span /></button></div>{open && <nav className="mobile-menu">{NAV_LINKS.map((link) => <a key={link.id} href={`#${link.id}`} onClick={() => setOpen(false)}>{link.label}</a>)}</nav>}</motion.header>;
 }
 
+function Hero() {
+  return <section id="top" className="hero-new"><div className="hero-new__glow" /><div className="container hero-new__inner"><Reveal className="hero-new__content"><span className="eyebrow">Incubr Tech Pvt Ltd · Sprint incubation and India market entry</span><h1>From idea to<br />market-ready.<br />From global<br />brand to India.</h1><p>Incubr takes consumer products <strong>from zero to one</strong>, and brings global brands into India, one market at a time.</p><div className="hero-new__actions"><a href="#contact" className="btn">Book an India Readiness Call <span aria-hidden="true">→</span></a><a href="#services" className="btn btn--ghost">Explore services</a></div></Reveal><Reveal className="hero-new__orb" variants={{ hidden: { opacity: 0, scale: .7 }, show: { opacity: 1, scale: 1, transition: { duration: 1.1, ease } } }}><div className="orb-core"><span>ONE<br />MARKET</span></div><div className="orb-ring orb-ring--one" /><div className="orb-ring orb-ring--two" /><span className="orb-label orb-label--one">Validate</span><span className="orb-label orb-label--two">Build</span><span className="orb-label orb-label--three">Launch</span></Reveal><div className="hero-new__proof"><span>9 services under one roof</span><span>3 phases: validate, build or localize, launch</span><span>Led by a former country lead for a major brand in India and the UAE</span></div></div></section>;
+}
+
 function Approach() {
-  return <section id="approach" className="section content-section"><div className="container"><Reveal className="section-head"><span className="eyebrow">Approach</span><h2>Not the usual way<br />to enter a market</h2></Reveal><Reveal className="compare" variants={stagger}><motion.div className="compare__row compare__head" variants={fadeUp}><div /><div>The usual way</div><div>The Incubr way</div></motion.div>{COMPARISON.map(([label, usual, ours]) => <motion.div key={label} className="compare__row" variants={fadeUp}><div className="compare__label">{label}</div><div className="compare__usual"><small>The usual way</small>{usual}</div><div className="compare__ours"><span className="check">&#10003;</span>{ours}</div></motion.div>)}</Reveal></div></section>;
+  return <section id="approach" className="section content-section approach-new"><div className="container"><Reveal className="section-head"><span className="eyebrow">Approach</span><h2>Market entry is a<br />contact sport. We<br />play it on the ground.</h2><p className="section-lead">No year-long plans written from afar. We win one market with a focused range, learn every week, and scale only once product-market fit is proven in real sales.</p></Reveal><Reveal className="approach-steps" variants={stagger}>{APPROACH_STEPS.map(([number, title, text]) => <motion.article className="approach-step" key={number} variants={fadeUp} whileHover={{ y: -8 }}><span className="approach-step__number">{number}</span><h3>{title}</h3><p>{text}</p></motion.article>)}</Reveal><Reveal className="compare" variants={stagger}><motion.div className="compare__row compare__head" variants={fadeUp}><div /><div>Typical market entry</div><div>The Incubr way</div></motion.div>{COMPARISON.map(([label, usual, ours]) => <motion.div key={label} className="compare__row" variants={fadeUp}><div className="compare__label">{label}</div><div className="compare__usual"><small>Typical market entry</small>{usual}</div><div className="compare__ours"><span className="check">&#10003;</span>{ours}</div></motion.div>)}</Reveal></div></section>;
 }
 
 function Services() {
@@ -70,5 +80,5 @@ function Founder() {
 export default function App() {
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, { stiffness: 120, damping: 30 });
-  return <><motion.div className="progress" style={{ scaleX }} /><Navbar /><main><Approach /><Services /><WhyIndia /><Founder /></main></>;
+  return <><motion.div className="progress" style={{ scaleX }} /><Navbar /><main><Hero /><Approach /><Services /><WhyIndia /><Founder /></main></>;
 }
