@@ -35,7 +35,8 @@ h2 { font-size: clamp(2rem, 4vw, 3.1rem); }
 .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 50; padding: 22px 0; transition: background .4s, box-shadow .4s, padding .4s; }
 .nav--scrolled { background: rgba(251, 250, 247, .88); backdrop-filter: blur(14px); box-shadow: 0 1px 0 var(--line); padding: 14px 0; }
 .nav__inner { display: flex; align-items: center; gap: 32px; }
-.logo { font-weight: 700; letter-spacing: .2em; font-size: 1.25rem; color: var(--navy); }
+.logo { display: inline-flex; align-items: center; width: 112px; color: var(--navy); }
+.logo img { display: block; width: 100%; height: auto; filter: brightness(0) saturate(100%) invert(12%) sepia(14%) saturate(1718%) hue-rotate(179deg) brightness(92%) contrast(95%); }
 .logo span { display: inline-block; transform: scaleX(-1); color: var(--accent); }
 .nav__links { display: flex; gap: 30px; margin-left: auto; }
 .nav__links a { font-size: .92rem; font-weight: 500; color: var(--muted); position: relative; padding: 4px 0; transition: color .3s; }
@@ -208,7 +209,7 @@ body { background: var(--paper); }
 .nav { padding: 24px 0; }
 .nav::after { content: ""; position: absolute; inset: 0; z-index: -1; background: rgba(247, 245, 239, .72); backdrop-filter: blur(16px); opacity: 0; transition: opacity .4s; }
 .nav--scrolled::after { opacity: 1; }
-.logo { letter-spacing: .26em; }
+.logo { letter-spacing: 0; }
 .logo__word { display: inline-block; transform: none !important; color: var(--navy) !important; }
 .logo__mark { display: inline-block; transform: none !important; color: var(--orange) !important; font-family: var(--serif); font-style: italic; letter-spacing: 0; margin: 0 .02em; }
 .nav__links a { color: #687386; }
@@ -303,8 +304,7 @@ body { background: var(--paper); }
   .nav { padding: 23px 0; }
   .nav--scrolled { padding: 18px 0; }
   .nav__inner { gap: 0; }
-  .logo { font-size: 1.25rem; letter-spacing: .28em; }
-  .logo__mark { font-size: 1.35rem; }
+  .logo { width: 96px; }
   .burger { width: 30px; height: 30px; }
   .burger span { left: 2px; right: 0; height: 2px; }
   .burger span:first-child { top: 9px; }
