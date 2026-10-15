@@ -30,7 +30,9 @@ export default async function handler(request, response) {
   }
   if (!allowedProfiles.has(booking.profile)) return json(response, 400, { message: "Please choose a valid profile." });
   if (!allowedTimelines.has(booking.timeline)) return json(response, 400, { message: "Please choose a valid timeline." });
-  if (!process.env.RESEND_API_KEY) return json(response, 500, { message: "Email service is not configured yet." });
+  if (!process.env.SENDGRID_API_KEY || !process.env.SENDGRID_FROM_EMAIL) {
+    return json(response, 500, { message: "Email service is not configured yet." });
+  }
 
   const emailText = [
     "New Incubr India Readiness Call request",
@@ -43,18 +45,18 @@ export default async function handler(request, response) {
     `Message: ${booking.message || "Not provided"}`,
   ].join("\n");
 
-  const emailResponse = await fetch("https://api.resend.com/emails", {
+  const emailResponse = await fetch("https://api.sendgrid.com/v3/mail/send", {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+      Authorization: `Bearer ${process.env.SENDGRID_API_KEY}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: process.env.BOOKING_FROM_EMAIL || "Incubr website <onboarding@resend.dev>",
-      to: ["products@incubr.com"],
-      reply_to: booking.email,
+      personalizations: [{ to: [{ email: "products@incubr.com" }] }],
+      from: { email: process.env.SENDGRID_FROM_EMAIL, name: "Incubr website" },
+      reply_to: { email: booking.email, name: booking.fullName },
       subject: `India Readiness Call: ${booking.company}`,
-      text: emailText,
+      content: [{ type: "text/plain", value: emailText }],
     }),
   });
 
