@@ -94,7 +94,8 @@ function BookingPage() {
     const payload = Object.fromEntries(form.entries());
     try {
       const response = await fetch("/api/book-call", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
-      const result = await response.json();
+      const contentType = response.headers.get("content-type") || "";
+      const result = contentType.includes("application/json") ? await response.json() : { message: "The booking service is unavailable. Please try again shortly." };
       if (!response.ok) throw new Error(result.message || "We could not submit your request.");
       setStatus("success");
       event.currentTarget.reset();
