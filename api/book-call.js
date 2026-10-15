@@ -30,7 +30,7 @@ export default async function handler(request, response) {
   }
   if (!allowedProfiles.has(booking.profile)) return json(response, 400, { message: "Please choose a valid profile." });
   if (!allowedTimelines.has(booking.timeline)) return json(response, 400, { message: "Please choose a valid timeline." });
-  if (!process.env.SENDGRID_API_KEY || !process.env.SENDGRID_FROM_EMAIL) {
+  if (!process.env.SENDGRID_API_KEY) {
     return json(response, 500, { message: "Email service is not configured yet." });
   }
 
@@ -53,13 +53,17 @@ export default async function handler(request, response) {
     },
     body: JSON.stringify({
       personalizations: [{ to: [{ email: "products@incubr.com" }] }],
-      from: { email: process.env.SENDGRID_FROM_EMAIL, name: "Incubr website" },
+      from: { email: process.env.SENDGRID_FROM_EMAIL || "products@incubr.com", name: "Incubr website" },
       reply_to: { email: booking.email, name: booking.fullName },
       subject: `India Readiness Call: ${booking.company}`,
       content: [{ type: "text/plain", value: emailText }],
     }),
   });
 
-  if (!emailResponse.ok) return json(response, 502, { message: "We could not send your request. Please try again shortly." });
+  if (!emailResponse.ok) {
+    const providerError = await emailResponse.text();
+    console.error("SendGrid rejected booking email:", emailResponse.status, providerError.slice(0, 500));
+    return json(response, 502, { message: "Email delivery is not configured correctly. Please contact the site administrator." });
+  }
   return json(response, 201, { ok: true });
 }
