@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion, useScroll, useSpring } from "framer-motion";
 import "./App.css";
-import { INDIA_STATES, INDIA_VIEWBOX, projectIndia } from "./indiaMap";
+import WhyIndia from "./WhyIndia";
 
 const NAV_LINKS = [
   { id: "approach", label: "Approach" },
@@ -25,22 +25,6 @@ const SERVICE_OPTIONS = [
   ["For global brands", "India market entry", "A partner on the ground from first insight to first sale in India.", [["Validate", "Market validation, channel research, competitive positioning"], ["Localize", "Product localization, CMO and strategic sourcing, quality and compliance"], ["Launch", "Brand and packaging adaptation, go-to-market and sales, market enablement"]]],
   ["For founders and new products", "Sprint incubation", "A one-stop sprint that takes a product idea to market-ready.", [["Validate", "Product validation, category validation, marketplace research"], ["Build", "Competitive positioning, product development, CMO management"], ["Launch-ready", "Bespoke brand and packaging, quality assurance, go-to-market"]]],
 ];
-const INDIA_STATS = [
-  ["#4", "Largest economy", "Nominal GDP of about $4.19 trillion in 2025, ahead of Japan.", "bars"],
-  ["5%", "GST on packaged foods", "GST 2.0 (Sep 2025) cut sauces, pasta, chocolates, coffee and more to 5%.", "coins"],
-  ["₹12L", "Tax-free income", "From FY26, incomes up to ₹12 lakh pay no income tax.", "wallet"],
-  ["24.5B", "UPI payments a month", "A record in August 2026, up 22% year on year.", "trend"],
-];
-const statIcon = { width: 16, height: 16, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round", strokeLinejoin: "round" };
-const STAT_ICONS = {
-  bars: <svg {...statIcon}><path d="M4 20h16M7 16v-5M12 16V6M17 16v-8" /></svg>,
-  coins: <svg {...statIcon}><ellipse cx="12" cy="6" rx="7" ry="3" /><path d="M5 6v6c0 1.66 3.13 3 7 3s7-1.34 7-3V6M5 12v6c0 1.66 3.13 3 7 3s7-1.34 7-3v-6" /></svg>,
-  wallet: <svg {...statIcon}><rect x="3" y="6" width="18" height="13" rx="2" /><path d="M3 10h13a2 2 0 0 1 0 4h-1M7 6V4.5L15 3v3" /></svg>,
-  trend: <svg {...statIcon}><path d="m3 17 6-6 4 4 8-8M15 7h6v6" /></svg>,
-};
-// Delhi hub plus major cities as [lon, lat].
-const MAP_HUB = [77.2, 28.6];
-const MAP_CITIES = [[74.8, 34.08], [76.78, 30.73], [75.79, 26.91], [80.95, 26.85], [85.14, 25.6], [88.36, 22.57], [91.74, 26.14], [93.94, 24.8], [72.57, 23.02], [77.41, 23.26], [81.63, 21.25], [79.09, 21.15], [85.82, 20.3], [72.88, 19.08], [73.86, 18.52], [78.49, 17.39], [73.83, 15.49], [77.59, 12.97], [80.27, 13.08], [76.27, 9.93], [77.54, 8.08], [70.8, 22.3]];
 const CHAPTERS = [
   ["Chapter 1", "The Builder", "Built brands from zero to one: product development, positioning and customer experience."],
   ["Chapter 2", "The Operator", "Ran the country business for a major brand across India and the UAE, leading sales and opening new markets."],
@@ -146,29 +130,7 @@ function Services() {
   return <section id="services" className="section content-section services-new"><div className="container"><Reveal className="section-head"><span className="eyebrow">Services</span><h2>Two ways to<br />work with Incubr</h2><p className="section-lead">Both run as sprints, with one team covering validation, development, manufacturing, branding, quality and launch.</p></Reveal><div className="service-options">{SERVICE_OPTIONS.map(([eyebrow, title, text, rows]) => <Reveal key={title} className="service-option"><span className="eyebrow">{eyebrow}</span><h3>{title}</h3><p>{text}</p><div className="service-rows">{rows.map(([label, detail]) => <div className="service-row" key={label}><strong>{label}</strong><span>{detail}</span></div>)}</div></Reveal>)}</div></div></section>;
 }
 
-function IndiaMap() {
-  const [hx, hy] = projectIndia(...MAP_HUB);
-  return <Reveal className="india-map" variants={{ hidden: { opacity: 0, scale: .92 }, show: { opacity: 1, scale: 1, transition: { duration: 1.2, ease } } }}>
-    <svg viewBox={INDIA_VIEWBOX} aria-label="Map of India with major cities connected to Delhi" role="img">
-      <defs>
-        <filter id="mapGlow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="6" /></filter>
-        <radialGradient id="cityGlow"><stop offset="0" stopColor="#ffd2a6" /><stop offset=".35" stopColor="#f08a3c" stopOpacity=".75" /><stop offset="1" stopColor="#f08a3c" stopOpacity="0" /></radialGradient>
-        <radialGradient id="mapFill" cx="45%" cy="40%" r="70%"><stop offset="0" stopColor="#24375a" /><stop offset="1" stopColor="#152640" /></radialGradient>
-      </defs>
-      <g className="india-map__radar">{[100, 180, 260, 330].map((r) => <circle key={r} cx={hx} cy={hy + 120} r={r} />)}<path d={`M${hx} ${hy - 300}V${hy + 520}M${hx - 340} ${hy + 120}H${hx + 360}`} /></g>
-      <g className="india-map__halo" filter="url(#mapGlow)">{INDIA_STATES.map((d, i) => <path key={i} d={d} />)}</g>
-      <g className="india-map__edge">{INDIA_STATES.map((d, i) => <path key={i} d={d} />)}</g>
-      <g className="india-map__states">{INDIA_STATES.map((d, i) => <path key={i} d={d} />)}</g>
-      <g className="india-map__arcs">{MAP_CITIES.map(([lon, lat], i) => { const [x, y] = projectIndia(lon, lat); const mx = (hx + x) / 2 + (y - hy) * .18, my = (hy + y) / 2 - (x - hx) * .18; return <path key={i} d={`M${hx} ${hy}Q${mx} ${my} ${x} ${y}`} style={{ animationDelay: `${(i % 7) * -.45}s` }} />; })}</g>
-      <g className="india-map__cities">{MAP_CITIES.map(([lon, lat], i) => { const [x, y] = projectIndia(lon, lat); return <g key={i} style={{ animationDelay: `${(i * .37) % 3}s` }}><circle cx={x} cy={y} r="11" fill="url(#cityGlow)" /><circle cx={x} cy={y} r="2.4" className="india-map__core" /></g>; })}</g>
-      <g className="india-map__hub"><circle cx={hx} cy={hy} r="26" fill="url(#cityGlow)" /><circle cx={hx} cy={hy} r="4" className="india-map__core" /></g>
-    </svg>
-  </Reveal>;
-}
 
-function WhyIndia() {
-  return <section id="why-india" className="section content-section why-new"><div className="container why-layout"><div className="why-layout__text"><Reveal className="section-head"><span className="eyebrow">Why India, why now</span><h2>The world's fourth-<br />largest economy is<br /><em>lowering the cost of entry.</em></h2><p className="section-lead">Tax cuts, a growing middle class and digital payment rails make 2026 a strong window for consumer brands.</p></Reveal><Reveal className="india-stats" variants={stagger}><span className="india-stats__node" aria-hidden="true" />{INDIA_STATS.map(([big, title, text, icon]) => <motion.div className="india-stat" key={title} variants={fadeUp} whileHover={{ y: -4 }}><div className="india-stat__top"><div className="india-stat__big">{big}</div><span className="india-stat__icon" aria-hidden="true">{STAT_ICONS[icon]}</span></div><h3>{title}</h3><p>{text}</p></motion.div>)}</Reveal><p className="sources">Sources: IMF World Economic Outlook, Apr 2025 (via Gulf News); GST Council, Sep 2025 (via WION); Union Budget 2025-26 (via Business Today); NPCI, Aug 2026 (via StartupTalky).</p></div><IndiaMap /></div></section>;
-}
 
 function Founder() {
   return <section id="founder" className="section content-section founder-new"><div className="container"><Reveal className="founder-heading"><span className="eyebrow">Founder</span><h2>Led by an operator<br />who has done it before</h2></Reveal><div className="founder-profile"><Reveal className="founder__media"><div className="founder__frame"><img src="/founder.jpg" alt="Gopal Batra, Founder of Incubr Tech" loading="lazy" decoding="async" /></div><p className="founder__caption">Former country lead for a major brand, India and the UAE</p></Reveal><Reveal className="founder__text"><h3>Gopal Batra</h3><p className="founder__role">Founder, Incubr Tech Pvt Ltd</p><p className="founder__lead">A brand builder and country operator who has spent his career on the hardest stretch for any brand: the first mile in a new market.</p></Reveal></div><Reveal className="chapters" variants={stagger}>{CHAPTERS.map(([label, title, text], i) => <motion.article className="chapter" key={title} variants={fadeUp} whileHover={{ y: -6 }}><div className="chapter__mark"><span className="chapter__no">{String(i + 1).padStart(2, "0")}</span></div><span className="chapter__label">{label}</span><h3>{title}</h3><p>{text}</p></motion.article>)}</Reveal><Reveal className="capabilities" variants={stagger}>{CAPABILITIES.map(([title, [lead, ...items], icon, flow]) => <motion.div className={`capability capability--${title.toLowerCase()}`} key={title} variants={fadeUp} whileHover={{ y: -6 }}><span className={`cap-flow cap-flow--${flow}`} aria-hidden="true"><i /></span><div className="capability__head"><span className="capability__icon" aria-hidden="true">{CAP_ICONS[icon]}</span><div><span className="eyebrow">{title}</span><h3>{lead}</h3></div></div><ul>{items.map((item) => <li key={item}>{item}<span aria-hidden="true">→</span></li>)}</ul></motion.div>)}</Reveal></div></section>;
@@ -204,7 +166,7 @@ export default function App() {
   const [path, setPath] = useState(window.location.pathname);
   useEffect(() => { const onPopState = () => setPath(window.location.pathname); window.addEventListener("popstate", onPopState); return () => window.removeEventListener("popstate", onPopState); }, []);
   if (path === "/book-a-call") return <BookingPage />;
-  return <><motion.div className="progress" style={{ scaleX }} /><Navbar /><main><Hero /><Approach /><Playbook /><Services /><WhyIndia /><Founder /></main><Footer /></>;
+  return <><motion.div className="progress" style={{ scaleX }} /><Navbar /><main><Hero /><Approach /><Playbook /><Services /><WhyIndia onBook={() => navigateTo("/book-a-call")} /><Founder /></main><Footer /></>;
 }
 
 function Footer() {
