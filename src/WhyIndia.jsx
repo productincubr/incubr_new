@@ -19,7 +19,10 @@ const SIGNALS = [
   { title: "Global brands are winning here", text: "From D2C to retail, India is a key growth market for global consumer brands.", at: [78.49, 17.39], label: [560, 480], side: "r" },
   { title: "Rising incomes", text: "Per capita income 3x by 2030", at: [77.59, 12.97], label: [80, 565], side: "l" },
 ];
-const CATEGORIES = [["Food & Beverage", "leaf"], ["Personal Care & Wellness", "lotus"], ["Home & Living", "home"], ["Pets", "paw"], ["Mom & Baby", "bottle"], ["Stationery & Lifestyle", "book"], ["Specialty Foods & Nutrition", "bowl"]];
+const CATEGORIES = [
+  ["Food & Beverage", "food"], ["Beauty & Personal Care", "lotus"], ["Home & Furniture", "home"], ["Pets & Animal Care", "paw"], ["Mom, Baby & Kids", "bottle"], ["Stationery & Creative Living", "book"], ["Specialty Foods & Nutrition", "bowl"],
+  ["Fashion & Accessories", "bag"], ["Consumer Electronics", "laptop"], ["Mobility & Auto Accessories", "car"], ["Education & Learning", "cap"], ["Travel & Experiences", "plane"], ["Home Improvement & DIY", "hammer"], ["Clean Energy & Sustainability", "leaf"],
+];
 // Major markets [name, lon, lat, weight]; brightest lights on the globe.
 const CITIES = [
   ["Delhi", 77.2, 28.6, 3], ["Mumbai", 72.88, 19.08, 3], ["Kolkata", 88.36, 22.57, 2.4], ["Bengaluru", 77.59, 12.97, 2.6], ["Chennai", 80.27, 13.08, 2.2], ["Hyderabad", 78.49, 17.39, 2.2],
@@ -101,6 +104,13 @@ const ICONS = {
   growth: <svg {...ic}><path d="M4 20h16M7 17v-3M11 17v-5M15 17v-7M19 17V8" /><path d="m5 11 5-4 3 2 6-5M16 4h3v3" /></svg>,
   phone: <svg {...ic}><rect x="6.5" y="2.5" width="11" height="19" rx="2.2" /><path d="M10.5 18.5h3" /></svg>,
   cart: <svg {...ic}><path d="M3 4h2l2.2 10.5a1.5 1.5 0 0 0 1.5 1.2h8.6a1.5 1.5 0 0 0 1.5-1.1L20.5 8H6" /><circle cx="9.5" cy="19.5" r="1.2" /><circle cx="17" cy="19.5" r="1.2" /></svg>,
+  food: <svg {...ic}><path d="M6 3v6a2 2 0 0 0 2 2v10M10 3v6a2 2 0 0 1-2 2M8 3v5M16 21V3c2.2 1 3.5 3.5 3.5 7 0 2-1.2 3-3.5 3" /></svg>,
+  bag: <svg {...ic}><path d="M5 8h14l-1 12.5H6z" /><path d="M9 10V6.5a3 3 0 0 1 6 0V10" /></svg>,
+  laptop: <svg {...ic}><rect x="4.5" y="5" width="15" height="10" rx="1.2" /><path d="M2.5 18.5h19" /></svg>,
+  car: <svg {...ic}><path d="M4 16v-4l2-5h12l2 5v4z" /><path d="M4 12h16M7.5 14h1.5M15 14h1.5M6 16v2.5M18 16v2.5" /></svg>,
+  cap: <svg {...ic}><path d="m2.5 9.5 9.5-5 9.5 5-9.5 5z" /><path d="M6.5 11.6V16c1.5 1.6 3.5 2.5 5.5 2.5s4-.9 5.5-2.5v-4.4M21.5 9.5v5" /></svg>,
+  plane: <svg {...ic}><path d="M21 3.5c-1-1-2.6-.6-3.6.4L14 7.3 5.5 5 4 6.5l7 4-3.2 3.3-3-.6-1.3 1.3 3.2 1.6 1.6 3.2 1.3-1.3-.6-3 3.3-3.2 4 7 1.5-1.5-2.3-8.5 3.4-3.4c1-1 1.4-2.6.4-3.6z" /></svg>,
+  hammer: <svg {...ic}><path d="m14.5 6.5-11 11 3 3 11-11" /><path d="m12.5 4.5 3-1.5 5.5 5.5-2 2-2-1-1.5 1.5-3-3z" /></svg>,
   leaf: <svg {...ic}><path d="M5 19c0-8 5-14 15-14 0 10-6 15-14 15" /><path d="M5 19 13 11" /></svg>,
   lotus: <svg {...ic}><path d="M12 19c-2.5-2-3.5-5-3.5-8S10 5.5 12 4c2 1.5 3.5 4 3.5 7s-1 6-3.5 8z" /><path d="M12 19c-3-.3-6.5-2.5-8-7 2-.5 4.4 0 5.4 1M12 19c3-.3 6.5-2.5 8-7-2-.5-4.4 0-5.4 1" /></svg>,
   home: <svg {...ic}><path d="m3.5 11 8.5-7 8.5 7" /><path d="M5.5 9.5V20h13V9.5M10 20v-5h4v5" /></svg>,
