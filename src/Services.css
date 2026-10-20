@@ -6,13 +6,15 @@
   --svc-orange-deep: #ad4617;
   --svc-peach: #fbeadd;
   --svc-line: #ece2d7;
-  position: relative; overflow: hidden; padding: 104px 0 112px;
+  position: relative; overflow: hidden; padding: 104px 0 64px;
   background-color: #fbf7f1;
   background-image: linear-gradient(rgba(150, 120, 90, .05) 1px, transparent 1px), linear-gradient(90deg, rgba(150, 120, 90, .05) 1px, transparent 1px);
   background-size: 28px 28px;
 }
 .svc::before { content: ""; position: absolute; width: 640px; height: 640px; right: -220px; top: -160px; border-radius: 50%; background: radial-gradient(circle, rgba(232, 140, 80, .14), transparent 65%); pointer-events: none; }
 .svc .container { position: relative; z-index: 1; }
+/* Keep the gap to the next section tight */
+.svc + .section { padding-top: 56px; }
 
 /* Heading */
 .svc-head { margin-bottom: 40px; }
@@ -73,6 +75,12 @@
 .svc-help__icon svg { animation: svcBob 3.2s ease-in-out infinite; }
 @keyframes svcBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
 
+/* Two columns: both cards share one row grid, so tags, titles, rows and buttons line up */
+@media (min-width: 901px) {
+  .svc-card { display: grid; grid-row: span 7; grid-template-rows: subgrid; row-gap: 0; }
+  .svc-rows { display: grid; grid-row: span 3; grid-template-rows: subgrid; row-gap: 0; }
+  .svc-card .svc-btn { align-self: end; }
+}
 @media (max-width: 1100px) {
   .svc-help { grid-template-columns: auto minmax(0, 1fr) auto; }
   .svc-note--help { grid-column: 2 / -1; justify-self: end; margin-top: -10px; }
@@ -81,7 +89,8 @@
   .svc-cards { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 640px) {
-  .svc { padding: 72px 0 80px; background-size: 22px 22px; }
+  .svc { padding: 72px 0 48px; background-size: 22px 22px; }
+  .svc + .section { padding-top: 40px; }
   .svc-head { margin-bottom: 28px; }
   .svc-card { padding: 24px 20px 22px; }
   .svc-card__tag { padding-right: 0; gap: 10px; font-size: .625rem; letter-spacing: .14em; }
