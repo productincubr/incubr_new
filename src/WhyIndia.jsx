@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { animate, useInView, useReducedMotion } from "framer-motion";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { animate, motion, useInView, useMotionValueEvent, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { INDIA_STATES, projectIndia } from "./indiaMap";
 import "./WhyIndia.css";
 
@@ -20,42 +20,80 @@ const SIGNALS = [
   { title: "Rising incomes", text: "Per capita income 3x by 2030", at: [77.59, 12.97], label: [80, 565], side: "l" },
 ];
 const CATEGORIES = [["Food & Beverage", "leaf"], ["Personal Care & Wellness", "lotus"], ["Home & Living", "home"], ["Pets", "paw"], ["Mom & Baby", "bottle"], ["Stationery & Lifestyle", "book"], ["Specialty Foods & Nutrition", "bowl"]];
-// Major markets [name, lon, lat]; lit nodes on the map.
+// Major markets [name, lon, lat, weight]; brightest lights on the globe.
 const CITIES = [
-  ["Delhi", 77.2, 28.6], ["Mumbai", 72.88, 19.08], ["Kolkata", 88.36, 22.57], ["Bengaluru", 77.59, 12.97], ["Chennai", 80.27, 13.08], ["Hyderabad", 78.49, 17.39],
-  ["Ahmedabad", 72.57, 23.02], ["Pune", 73.86, 18.52], ["Jaipur", 75.79, 26.91], ["Lucknow", 80.95, 26.85], ["Guwahati", 91.74, 26.14], ["Kochi", 76.27, 9.93],
+  ["Delhi", 77.2, 28.6, 3], ["Mumbai", 72.88, 19.08, 3], ["Kolkata", 88.36, 22.57, 2.4], ["Bengaluru", 77.59, 12.97, 2.6], ["Chennai", 80.27, 13.08, 2.2], ["Hyderabad", 78.49, 17.39, 2.2],
+  ["Ahmedabad", 72.57, 23.02, 1.8], ["Pune", 73.86, 18.52, 1.8], ["Jaipur", 75.79, 26.91, 1.4], ["Lucknow", 80.95, 26.85, 1.6], ["Guwahati", 91.74, 26.14, 1], ["Kochi", 76.27, 9.93, 1.2],
+  ["Patna", 85.14, 25.6, 1.4], ["Nagpur", 79.09, 21.15, 1], ["Indore", 75.86, 22.72, 1], ["Chandigarh", 76.78, 30.73, 1], ["Bhubaneswar", 85.82, 20.3, .9], ["Coimbatore", 76.96, 11.02, .9],
 ];
 const LINKS = [[0, 1], [0, 2], [0, 3], [1, 3], [1, 5], [5, 4], [3, 4], [2, 10], [0, 8], [0, 9], [6, 1], [7, 5], [2, 4], [0, 6], [3, 11]];
-const WIDE_BOX = [-170, -20, 985, 713];
-const NARROW_BOX = [-12, -12, 624, 697];
+const WIDE_BOX = [-170, -80, 985, 840];
+const NARROW_BOX = [-30, -70, 660, 830];
+const GLOBE = { cx: 300, cy: 660, r: 700 };
 
-// Photo regions: each groups INDIA_STATES indices and shows a landmark from that part of India.
-const REGIONS = [
-  { key: "delhi", name: "Delhi and the north", place: "India Gate, New Delhi", states: [14, 13, 26, 12, 9, 5, 32], credit: ["A.Savin", "Free Art License", "India_Gate_in_New_Delhi_03-2016.jpg"] },
-  { key: "rajasthan", name: "Rajasthan", place: "Hawa Mahal, Jaipur", states: [27], credit: ["Marcin Białek", "CC BY-SA 4.0", "Hawa_Mahal_2011.jpg"] },
-  { key: "up", name: "Uttar Pradesh", place: "Taj Mahal, Agra", states: [31], credit: ["Yann, edited by King of Hearts", "CC BY-SA 4.0", "Taj_Mahal,_Agra,_India_edit2.jpg"] },
-  { key: "gujarat", name: "Gujarat", place: "Rani ki Vav, Patan", states: [11, 7, 8], credit: ["Bernard Gagnon", "CC BY-SA 3.0", "Rani_ki_vav_10.jpg"] },
-  { key: "maharashtra", name: "Maharashtra and Goa", place: "Gateway of India, Mumbai", states: [19, 10], credit: ["Joe Ravi", "CC BY-SA 3.0", "Gateway_Of_India.jpg"] },
-  { key: "central", name: "Central India", place: "Great Stupa, Sanchi", states: [18, 6], credit: ["Bernard Gagnon", "CC BY-SA 3.0", "Stupa_1,_Sanchi_02.jpg"] },
-  { key: "east", name: "East India", place: "Victoria Memorial, Kolkata", states: [33, 4, 15, 24, 28], credit: ["DeepanjanGhosh", "CC BY-SA 4.0", "Victoria_Memorial_Kolkata_at_night.jpg"] },
-  { key: "northeast", name: "Northeast India", place: "Tea gardens, Assam", states: [3, 2, 20, 21, 22, 23, 30], credit: ["Diganta Talukdar", "CC BY-SA 4.0", "Assam_tea_garden_view.jpeg"] },
-  { key: "andhra", name: "Telangana and Andhra Pradesh", place: "Charminar, Hyderabad", states: [1], credit: ["Joydeep", "CC BY-SA 3.0", "Charminar_12_03_2012.jpg"] },
-  { key: "karnataka", name: "Karnataka", place: "Mysore Palace", states: [16], credit: ["Rijin S", "CC BY-SA 4.0", "Mysore_palace_front_view_001.jpg"] },
-  { key: "kerala", name: "Kerala", place: "Backwaters, Alappuzha", states: [17], credit: ["Vyacheslav Argenberg", "CC BY 4.0", "Kerala_backwaters,_Houseboats,_India.jpg"] },
-  { key: "tamilnadu", name: "Tamil Nadu", place: "Meenakshi Temple, Madurai", states: [29, 25], credit: ["Mamichaelraj", "CC BY-SA 4.0", "MEENAKSHI_TEMPLE-_WEST_TOWER.jpg"] },
-  { key: "andaman", name: "Andaman and Nicobar", place: "Radhanagar Beach, Havelock", states: [0], credit: ["Vyacheslav Argenberg", "CC BY 4.0", "Havelock_Island,_Radhanagar_Beach,_Andaman_Islands.jpg"] },
-].map((region) => {
-  const nums = region.states.flatMap((i) => INDIA_STATES[i].match(/-?\d+(?:\.\d+)?/g).map(Number));
-  const xs = nums.filter((_, i) => i % 2 === 0), ys = nums.filter((_, i) => i % 2 === 1);
-  const x = Math.min(...xs), y = Math.min(...ys);
-  return { ...region, box: [x, y, Math.max(...xs) - x, Math.max(...ys) - y] };
-});
-const NODES = CITIES.map(([name, lon, lat]) => [name, ...projectIndia(lon, lat)]);
+const NODES = CITIES.slice(0, 12).map(([name, lon, lat]) => [name, ...projectIndia(lon, lat)]);
 const ARCS = LINKS.map(([a, b]) => {
   const [, x1, y1] = NODES[a], [, x2, y2] = NODES[b];
   const bend = .16, mx = (x1 + x2) / 2 + (y2 - y1) * bend, my = (y1 + y2) / 2 - (x2 - x1) * bend;
   return `M${x1.toFixed(1)} ${y1.toFixed(1)}Q${mx.toFixed(1)} ${my.toFixed(1)} ${x2.toFixed(1)} ${y2.toFixed(1)}`;
 });
+
+// Orthographic graticule for the globe, so the sphere reads as a planet rather than a disc.
+const GRATICULE = (() => {
+  const tilt = (24 * Math.PI) / 180, { cx, cy, r } = GLOBE, lines = [];
+  const pt = (lon, lat) => {
+    const l = (lon * Math.PI) / 180, p = (lat * Math.PI) / 180;
+    const x = Math.cos(p) * Math.sin(l), y = Math.sin(p), z = Math.cos(p) * Math.cos(l);
+    const y2 = y * Math.cos(tilt) - z * Math.sin(tilt), z2 = y * Math.sin(tilt) + z * Math.cos(tilt);
+    return z2 > 0 ? [cx + x * r, cy - y2 * r] : null;
+  };
+  const trace = (fn) => { let d = "", pen = false; for (let t = 0; t <= 180; t++) { const p = fn(t); if (!p) { pen = false; continue; } d += `${pen ? "L" : "M"}${p[0].toFixed(1)} ${p[1].toFixed(1)}`; pen = true; } return d; };
+  for (let lon = -90; lon <= 90; lon += 15) lines.push(trace((t) => pt(lon, -90 + t)));
+  for (let lat = -60; lat <= 75; lat += 15) lines.push(trace((t) => pt(-90 + t, lat)));
+  return lines.filter(Boolean);
+})();
+
+function rng(seed) {
+  return () => { seed |= 0; seed = (seed + 0x6d2b79f5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+}
+
+// City lights: clustered around major markets, scattered elsewhere, all kept inside India's outline.
+function useLights() {
+  return useMemo(() => {
+    const ctx = document.createElement("canvas").getContext("2d");
+    const india = new Path2D(INDIA_STATES.join(""));
+    const rand = rng(7), hubs = CITIES.map(([, lon, lat, w]) => [...projectIndia(lon, lat), w]);
+    const total = hubs.reduce((s, h) => s + h[2], 0);
+    const [ox, oy] = projectIndia(77.2, 28.6);
+    const lights = [];
+    for (let tries = 0; lights.length < 560 && tries < 9000; tries++) {
+      let x, y;
+      if (rand() < .58) {
+        let pick = rand() * total, h = hubs[0];
+        for (const hub of hubs) { pick -= hub[2]; if (pick <= 0) { h = hub; break; } }
+        const a = rand() * Math.PI * 2, m = Math.sqrt(-2 * Math.log(rand() + 1e-9)) * (10 + h[2] * 6);
+        x = h[0] + Math.cos(a) * m; y = h[1] + Math.sin(a) * m;
+      } else { x = rand() * 600; y = rand() * 673; }
+      if (!ctx.isPointInPath(india, x, y)) continue;
+      const big = rand();
+      lights.push({ x, y, r: big > .96 ? 2.1 : big > .8 ? 1.4 : .85, o: .45 + rand() * .55, d: .5 + Math.hypot(x - ox, y - oy) / 520, tw: rand() < .16 });
+    }
+    // Faint glow from neighbouring land, so India sits on a living planet.
+    const far = [];
+    for (let i = 0; far.length < 150 && i < 4000; i++) {
+      const x = -200 + rand() * 1000, y = -40 + rand() * 360;
+      if (Math.hypot(x - GLOBE.cx, y - GLOBE.cy) > GLOBE.r - 6 || ctx.isPointInPath(india, x, y) || (y > 180 && x > 30 && x < 470)) continue;
+      far.push({ x, y, r: rand() > .85 ? 1.2 : .7, o: .12 + rand() * .3 });
+    }
+    const stars = [];
+    for (let i = 0; stars.length < 46 && i < 3000; i++) {
+      const x = -200 + rand() * 1050, y = -90 + rand() * 300;
+      if (Math.hypot(x - GLOBE.cx, y - GLOBE.cy) < GLOBE.r + 30) continue;
+      stars.push({ x, y, r: rand() > .9 ? 1.3 : .7, o: .2 + rand() * .5 });
+    }
+    return { lights, far, stars };
+  }, []);
+}
 
 const ic = { width: 22, height: 22, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.6, strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": true };
 const ICONS = {
@@ -79,112 +117,133 @@ function useNarrow(query = "(max-width: 760px)") {
   return narrow;
 }
 
+// Scroll reveal: every [data-in] element animates in on its own as it scrolls into view.
+function useScrollReveal(ref) {
+  useEffect(() => {
+    const items = ref.current.querySelectorAll("[data-in]");
+    const io = new IntersectionObserver((entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("is-in"); io.unobserve(e.target); } }), { rootMargin: "0px 0px -12% 0px", threshold: .15 });
+    items.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, [ref]);
+}
+
 function format(value, { decimals, prefix = "", suffix = "" }) {
   return `${prefix}${value.toFixed(decimals)}${suffix}`;
 }
 
-function CountUp({ stat, run, delay }) {
+function CountUp({ stat, delay }) {
+  const ref = useRef(null);
+  const run = useInView(ref, { once: true, margin: "0px 0px -12% 0px" });
   const reduce = useReducedMotion();
   const final = format(stat.to, stat);
   const [text, setText] = useState(() => format(stat.from ?? 0, stat));
   useEffect(() => {
     if (!run) return;
     if (reduce) { setText(final); return; }
-    const controls = animate(stat.from ?? 0, stat.to, { duration: 1.1, delay, ease: [0.16, 1, 0.3, 1], onUpdate: (v) => setText(format(v, stat)) });
+    const controls = animate(stat.from ?? 0, stat.to, { duration: 1.4, delay, ease: [0.16, 1, 0.3, 1], onUpdate: (v) => setText(format(v, stat)) });
     return () => controls.stop();
   }, [run, reduce]);
-  return <span className="why-count" aria-label={final}><span className="why-count__ghost" aria-hidden="true">{final}</span><span className="why-count__live" aria-hidden="true">{text}</span></span>;
+  return <span ref={ref} className="why-count" aria-label={final}><span className="why-count__ghost" aria-hidden="true">{final}</span><span className="why-count__live" aria-hidden="true">{text}</span></span>;
 }
 
-function IndiaNetwork({ narrow, loadPhotos }) {
+function IndiaGlobe({ narrow }) {
+  const ref = useRef(null), spin = useRef(null);
+  const reduce = useReducedMotion();
+  const { lights, far, stars } = useLights();
   const [bx, by, bw, bh] = narrow ? NARROW_BOX : WIDE_BOX;
   const pct = (x, y) => [((x - bx) / bw) * 100, ((y - by) / bh) * 100];
-  return <div className="why-map" style={{ aspectRatio: `${bw} / ${bh}` }}>
-    <svg viewBox={`${bx} ${by} ${bw} ${bh}`} role="img" aria-label="Map of India showing a landmark from each region, with connections between major consumer markets">
+  // Scroll-linked: the globe drifts up, settles from a slight zoom, and its grid turns as you scroll past.
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const y = useTransform(scrollYProgress, [0, 1], reduce ? [0, 0] : [70, -70]);
+  const scale = useTransform(scrollYProgress, [0, .45], reduce ? [1, 1] : [1.12, 1]);
+  useMotionValueEvent(scrollYProgress, "change", (v) => { if (!reduce) spin.current?.setAttribute("transform", `rotate(${(v - .5) * 14} ${GLOBE.cx} ${GLOBE.cy})`); });
+  const { cx, cy, r } = GLOBE;
+  return <motion.div ref={ref} data-in className="why-globe" style={{ aspectRatio: `${bw} / ${bh}`, y, scale }}>
+    <svg viewBox={`${bx} ${by} ${bw} ${bh}`} role="img" aria-label="Night view of India on the globe, its state borders glowing and its cities lit up and connected">
       <defs>
-        <radialGradient id="whyLand" cx="46%" cy="42%" r="70%"><stop offset="0" stopColor="#1d3152" /><stop offset="1" stopColor="#0f1d33" /></radialGradient>
-        <radialGradient id="whyCity"><stop offset="0" stopColor="#fff1dc" /><stop offset=".3" stopColor="#ffb066" stopOpacity=".85" /><stop offset="1" stopColor="#f08a3c" stopOpacity="0" /></radialGradient>
-        <linearGradient id="whyShade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#0b1628" stopOpacity=".05" /><stop offset="1" stopColor="#0b1628" stopOpacity=".4" /></linearGradient>
-        <filter id="whyBlur" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="6" /></filter>
-        {REGIONS.map(({ key, states }) => <clipPath key={key} id={`whyClip-${key}`}>{states.map((i) => <path key={i} d={INDIA_STATES[i]} />)}</clipPath>)}
-        {/* Hide each region's interior so only its outer border glows, not the state lines inside it. */}
-        {REGIONS.map(({ key, states }) => <mask key={key} id={`whyEdge-${key}`} maskUnits="userSpaceOnUse" x="-50" y="-50" width="700" height="780"><rect x="-50" y="-50" width="700" height="780" fill="#fff" />{states.map((i) => <path key={i} d={INDIA_STATES[i]} fill="#000" />)}</mask>)}
+        <radialGradient id="whyOcean" cx="50%" cy="25%" r="62%"><stop offset="0" stopColor="#173a66" /><stop offset=".38" stopColor="#0d2446" /><stop offset="1" stopColor="#040b18" /></radialGradient>
+        <radialGradient id="whyRim" cx="50%" cy="50%" r="50%"><stop offset=".9" stopColor="#3d8bff" stopOpacity="0" /><stop offset=".985" stopColor="#5aa2ff" stopOpacity=".42" /><stop offset="1" stopColor="#a8d0ff" stopOpacity=".75" /></radialGradient>
+        <radialGradient id="whyLand" cx="45%" cy="40%" r="70%"><stop offset="0" stopColor="#1d2a3c" /><stop offset="1" stopColor="#0d1626" /></radialGradient>
+        <radialGradient id="whyCity"><stop offset="0" stopColor="#fff4e0" /><stop offset=".3" stopColor="#ffb966" stopOpacity=".85" /><stop offset="1" stopColor="#f08a3c" stopOpacity="0" /></radialGradient>
+        <filter id="whyBlur" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="5" /></filter>
+        <filter id="whyGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1.6" /></filter>
+        <filter id="whyAtmo" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="14" /></filter>
+        <clipPath id="whySphere"><circle cx={cx} cy={cy} r={r} /></clipPath>
       </defs>
-      <g className="why-map__rings" aria-hidden="true">{[150, 250, 350, 450].map((r) => <circle key={r} cx="300" cy="330" r={r} />)}</g>
-      <g className="why-map__land">{INDIA_STATES.map((d, i) => <path key={i} d={d} />)}</g>
-      <g className="why-map__photos">{REGIONS.map(({ key, name, place, box: [x, y, w, h] }, i) => <g key={key} clipPath={`url(#whyClip-${key})`} className="why-map__region" style={{ "--d": `${.35 + i * .09}s` }}>
-        <title>{`${name}: ${place}`}</title>
-        <rect x={x} y={y} width={w} height={h} className="why-map__regionbg" />
-        {loadPhotos && <image href={`/why-india/${key}.webp`} x={x - 6} y={y - 6} width={w + 12} height={h + 12} preserveAspectRatio="xMidYMid slice" className="why-map__photo" />}
-        <rect x={x} y={y} width={w} height={h} fill="url(#whyShade)" />
-      </g>)}</g>
-      <g className="why-map__halo" filter="url(#whyBlur)">{REGIONS.map(({ key, states }) => <g key={key} mask={`url(#whyEdge-${key})`}>{states.map((i) => <path key={i} d={INDIA_STATES[i]} />)}</g>)}</g>
-      <g className="why-map__outline">{REGIONS.map(({ key, states }) => <g key={key} mask={`url(#whyEdge-${key})`}>{states.map((i) => <path key={i} d={INDIA_STATES[i]} pathLength="1" />)}</g>)}</g>
-      <g className="why-map__arcs">{ARCS.map((d, i) => <path key={i} d={d} pathLength="1" style={{ "--d": `${1.6 + i * .06}s` }} />)}</g>
-      <g className="why-map__pulses">{ARCS.map((d, i) => <path key={i} d={d} pathLength="1" style={{ animationDelay: `${3 + (i * 1.7) % 7}s` }} />)}</g>
-      <g className="why-map__nodes">{NODES.map(([name, x, y], i) => <g key={name} style={{ "--d": `${1.5 + i * .07}s` }}><circle cx={x} cy={y} r="12" fill="url(#whyCity)" /><circle cx={x} cy={y} r="2.6" className="why-map__core" /></g>)}</g>
-      {!narrow && <g className="why-map__leaders">{SIGNALS.map(({ title, at, label: [lx, ly] }, i) => {
+      <g className="why-globe__stars" aria-hidden="true">{stars.map((s, i) => <circle key={i} cx={s.x} cy={s.y} r={s.r} opacity={s.o} />)}</g>
+      <g className="why-globe__planet">
+        <circle cx={cx} cy={cy} r={r + 6} className="why-globe__atmo" filter="url(#whyAtmo)" />
+        <circle cx={cx} cy={cy} r={r} fill="url(#whyOcean)" />
+        <g clipPath="url(#whySphere)">
+          <g ref={spin}>
+            <g className="why-globe__grid">{GRATICULE.map((d, i) => <path key={i} d={d} />)}</g>
+            <g className="why-globe__far">{far.map((s, i) => <circle key={i} cx={s.x} cy={s.y} r={s.r} opacity={s.o} />)}</g>
+          </g>
+        </g>
+        <circle cx={cx} cy={cy} r={r} fill="url(#whyRim)" />
+      </g>
+      <g className="why-globe__land">{INDIA_STATES.map((d, i) => <path key={i} d={d} />)}</g>
+      <g className="why-globe__halo" filter="url(#whyBlur)">{INDIA_STATES.map((d, i) => <path key={i} d={d} />)}</g>
+      <g className="why-globe__borders">{INDIA_STATES.map((d, i) => <path key={i} d={d} pathLength="1" />)}</g>
+      <g className="why-globe__lights">{lights.map((l, i) => <circle key={i} cx={l.x.toFixed(1)} cy={l.y.toFixed(1)} r={l.r} className={l.tw ? "tw" : undefined} style={{ "--o": l.o, "--d": `${l.d.toFixed(2)}s`, animationDelay: l.tw ? `${(i % 9) * .7}s` : undefined }} />)}</g>
+      <g className="why-globe__arcs">{ARCS.map((d, i) => <path key={i} d={d} pathLength="1" style={{ "--d": `${1.3 + i * .06}s` }} />)}</g>
+      <g className="why-globe__pulses">{ARCS.map((d, i) => <path key={i} d={d} pathLength="1" style={{ animationDelay: `${2.6 + (i * 1.7) % 7}s` }} />)}</g>
+      <g className="why-globe__nodes">{NODES.map(([name, x, y], i) => <g key={name} style={{ "--d": `${1.1 + i * .07}s` }}><circle cx={x} cy={y} r="14" fill="url(#whyCity)" /><circle cx={x} cy={y} r="2.6" className="why-globe__core" /></g>)}</g>
+      {!narrow && <g className="why-globe__leaders">{SIGNALS.map(({ title, at, label: [lx, ly] }, i) => {
         const [ax, ay] = projectIndia(...at);
-        const cx = (ax + lx) / 2, cy = Math.min(ay, ly) - 12;
-        return <g key={title} style={{ "--d": `${1.9 + i * .1}s` }}><path d={`M${ax} ${ay}Q${cx} ${cy} ${lx} ${ly}`} pathLength="1" /><circle cx={lx} cy={ly} r="4" /><circle cx={ax} cy={ay} r="2.4" /></g>;
+        const qx = (ax + lx) / 2, qy = Math.min(ay, ly) - 12;
+        return <g key={title} style={{ "--d": `${1.7 + i * .12}s` }}><path d={`M${ax} ${ay}Q${qx} ${qy} ${lx} ${ly}`} pathLength="1" /><circle cx={lx} cy={ly} r="4" /><circle cx={ax} cy={ay} r="2.4" /></g>;
       })}</g>}
     </svg>
     {!narrow && SIGNALS.map(({ title, text, label: [lx, ly], side }, i) => {
       const [left, top] = pct(lx, ly);
       const pos = side === "r" ? { left: `calc(${left}% + 12px)`, top: `${top}%` } : { right: `calc(${100 - left}% + 12px)`, top: `${top}%` };
-      return <div key={title} className={`why-signal why-signal--${side}`} style={{ ...pos, "--d": `${2 + i * .1}s` }}><strong>{title}</strong><span>{text}</span></div>;
+      return <div key={title} className={`why-signal why-signal--${side}`} style={{ ...pos, "--d": `${1.8 + i * .12}s` }}><strong>{title}</strong><span>{text}</span></div>;
     })}
-  </div>;
+  </motion.div>;
 }
 
 export default function WhyIndia({ onBook }) {
   const ref = useRef(null);
-  // Start once the section's top reaches the lower quarter of the screen; fetch photos a little earlier.
-  const inView = useInView(ref, { once: true, margin: "0px 0px -25% 0px" });
-  const nearView = useInView(ref, { once: true, margin: "800px 0px 800px 0px" });
   const narrow = useNarrow();
-  return <section id="why-india" ref={ref} className={`why-fold${inView ? " is-live" : ""}`}>
+  useScrollReveal(ref);
+  return <section id="why-india" ref={ref} className="why-fold">
     <div className="why-fold__inner">
       <div className="why-head">
-        <span className="why-eyebrow why-in" style={{ "--d": ".6s" }}>Why India, why now</span>
-        <h2>
-          <span className="why-line"><span className="why-in" style={{ "--d": ".8s" }}>The world's largest</span></span>{" "}
-          <span className="why-line"><span className="why-in" style={{ "--d": ".92s" }}>opportunity to build</span></span>{" "}
-          <span className="why-line"><em className="why-in" style={{ "--d": "1.04s" }}>consumer brands.</em></span>
+        <span className="why-eyebrow" data-in>Why India, why now</span>
+        <h2 className="why-title" data-in>
+          <span className="why-line"><span style={{ "--d": ".05s" }}>The world's largest</span></span>{" "}
+          <span className="why-line"><span style={{ "--d": ".17s" }}>opportunity to build</span></span>{" "}
+          <span className="why-line"><em style={{ "--d": ".29s" }}>consumer brands.</em></span>
         </h2>
-        <p className="why-in why-in--fade" style={{ "--d": "1.5s" }}>A young population, rising incomes, digital-first consumers and a lower cost base make India the most exciting market for global brands in 2026 and beyond.</p>
+        <p data-in style={{ "--d": ".15s" }}>A young population, rising incomes, digital-first consumers and a lower cost base make India the most exciting market for global brands in 2026 and beyond.</p>
+      </div>
+
+      <div className="why-cta" data-in>
+        <button type="button" className="why-btn why-btn--primary" onClick={onBook}>Book an India Readiness Call {ARROW}</button>
+        <a className="why-btn why-btn--ghost" href="#services">Explore services {ARROW}</a>
       </div>
 
       <div className="why-stats">
-        {STATS.map((stat, i) => <div className="why-stat why-in why-in--fade" key={stat.title} style={{ "--d": `${2 + i * .15}s` }}>
+        {STATS.map((stat, i) => <div className="why-stat" data-in key={stat.title} style={{ "--d": `${(i % 2) * .12}s` }}>
           <span className="why-stat__icon">{ICONS[stat.icon]}</span>
           <div>
-            <div className="why-stat__num"><CountUp stat={stat} run={inView} delay={2 + i * .15} /></div>
+            <div className="why-stat__num"><CountUp stat={stat} delay={.15 + (i % 2) * .12} /></div>
             <h3>{stat.title}</h3>
             <p>{stat.text}</p>
           </div>
         </div>)}
       </div>
 
-      <div className="why-cta why-in" style={{ "--d": "2.7s" }}>
-        <button type="button" className="why-btn why-btn--primary" onClick={onBook}>Book an India Readiness Call {ARROW}</button>
-        <a className="why-btn why-btn--ghost" href="#services">Explore services {ARROW}</a>
-      </div>
-
       <div className="why-visual">
-        <IndiaNetwork narrow={narrow} loadPhotos={nearView} />
-        {narrow && <ul className="why-signals-list">{SIGNALS.map(({ title, text }, i) => <li key={title} className="why-in why-in--fade" style={{ "--d": `${2 + i * .08}s` }}><strong>{title}</strong><span>{text}</span></li>)}</ul>}
+        <IndiaGlobe narrow={narrow} />
+        {narrow && <ul className="why-signals-list">{SIGNALS.map(({ title, text }, i) => <li key={title} data-in style={{ "--d": `${(i % 2) * .1}s` }}><strong>{title}</strong><span>{text}</span></li>)}</ul>}
       </div>
 
-      <div className="why-cats why-in why-in--fade" style={{ "--d": "2.4s" }}>
+      <div className="why-cats" data-in>
         <div className="why-cats__head"><span>High-growth categories</span><span>Consumers are spending more on a better life</span></div>
-        <ul>{CATEGORIES.map(([label, icon]) => <li key={label}>{ICONS[icon]}<span>{label}</span></li>)}</ul>
+        <ul>{CATEGORIES.map(([label, icon], i) => <li key={label} style={{ "--d": `${.1 + i * .06}s` }}>{ICONS[icon]}<span>{label}</span></li>)}</ul>
       </div>
-
-      <details className="why-credits">
-        <summary>Map photo credits</summary>
-        <p>{REGIONS.map(({ key, place, credit: [author, license, file] }, i) => <span key={key}>{i > 0 && " · "}<a href={`https://commons.wikimedia.org/wiki/File:${file}`} target="_blank" rel="noreferrer">{place}</a> by {author} ({license})</span>)}. Via Wikimedia Commons, cropped to the map.</p>
-      </details>
     </div>
   </section>;
 }

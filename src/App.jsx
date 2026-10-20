@@ -4,9 +4,9 @@ import "./App.css";
 import WhyIndia from "./WhyIndia";
 
 const NAV_LINKS = [
+  { id: "why-india", label: "Why India" },
   { id: "approach", label: "Approach" },
   { id: "services", label: "Services" },
-  { id: "why-india", label: "Why India" },
   { id: "founder", label: "Founder" },
 ];
 const COMPARISON = [
@@ -166,7 +166,7 @@ export default function App() {
   const [path, setPath] = useState(window.location.pathname);
   useEffect(() => { const onPopState = () => setPath(window.location.pathname); window.addEventListener("popstate", onPopState); return () => window.removeEventListener("popstate", onPopState); }, []);
   if (path === "/book-a-call") return <BookingPage />;
-  return <><motion.div className="progress" style={{ scaleX }} /><Navbar /><main><Hero /><Approach /><Playbook /><Services /><WhyIndia onBook={() => navigateTo("/book-a-call")} /><Founder /></main><Footer /></>;
+  return <><motion.div className="progress" style={{ scaleX }} /><Navbar /><main><Hero /><WhyIndia onBook={() => navigateTo("/book-a-call")} /><Approach /><Playbook /><Services /><Founder /></main><Footer /></>;
 }
 
 function Footer() {
