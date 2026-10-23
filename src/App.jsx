@@ -1,8 +1,11 @@
-import { useEffect, useState } from "react";
+import { Suspense, lazy, useEffect, useState } from "react";
 import { motion, useScroll, useSpring } from "framer-motion";
 import "./App.css";
 import WhyIndia from "./WhyIndia";
 import Services from "./Services";
+// The blog loads as its own chunk, so the homepage bundle stays small.
+const BlogIndex = lazy(() => import("./Blog").then((m) => ({ default: m.BlogIndex })));
+const BlogPost = lazy(() => import("./Blog").then((m) => ({ default: m.BlogPost })));
 
 const NAV_LINKS = [
   { id: "why-india", label: "Why India" },
@@ -70,11 +73,15 @@ function Reveal({ children, className = "", variants = fadeUp }) {
   return <motion.div className={className} variants={variants} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.15 }}>{children}</motion.div>;
 }
 
+function BlogLink({ onClick }) {
+  return <a href="/blog" onClick={(event) => { event.preventDefault(); onClick?.(); navigateTo("/blog"); }}>Blog</a>;
+}
+
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   useEffect(() => { const onScroll = () => setScrolled(window.scrollY > 30); window.addEventListener("scroll", onScroll); return () => window.removeEventListener("scroll", onScroll); }, []);
-  return <motion.header className={`nav ${scrolled || open ? "nav--scrolled" : ""}`} initial={{ y: -90 }} animate={{ y: 0 }} transition={{ duration: 0.7, ease }}><div className="container nav__inner"><a href="#top" className="logo" aria-label="Incubr home" onClick={(event) => { event.preventDefault(); navigateTo("/"); }}><img src="/logo.png" alt="Incubr" /></a><nav className="nav__links">{NAV_LINKS.map((link) => <a key={link.id} href={`/#${link.id}`}>{link.label}</a>)}</nav><button className="nav__book" onClick={() => navigateTo("/book-a-call")}>Book a Call <span aria-hidden="true">→</span></button><button className={`burger ${open ? "is-open" : ""}`} onClick={() => setOpen(!open)} aria-label="Toggle menu"><span /><span /></button></div>{open && <nav className="mobile-menu">{NAV_LINKS.map((link) => <a key={link.id} href={`/#${link.id}`} onClick={() => setOpen(false)}>{link.label}</a>)}<button className="nav__book mobile-book" onClick={() => { setOpen(false); navigateTo("/book-a-call"); }}>Book a Call <span aria-hidden="true">→</span></button></nav>}</motion.header>;
+  return <motion.header className={`nav ${scrolled || open ? "nav--scrolled" : ""}`} initial={{ y: -90 }} animate={{ y: 0 }} transition={{ duration: 0.7, ease }}><div className="container nav__inner"><a href="#top" className="logo" aria-label="Incubr home" onClick={(event) => { event.preventDefault(); navigateTo("/"); }}><img src="/logo.png" alt="Incubr" /></a><nav className="nav__links">{NAV_LINKS.map((link) => <a key={link.id} href={`/#${link.id}`}>{link.label}</a>)}<BlogLink /></nav><button className="nav__book" onClick={() => navigateTo("/book-a-call")}>Book a Call <span aria-hidden="true">→</span></button><button className={`burger ${open ? "is-open" : ""}`} onClick={() => setOpen(!open)} aria-label="Toggle menu"><span /><span /></button></div>{open && <nav className="mobile-menu">{NAV_LINKS.map((link) => <a key={link.id} href={`/#${link.id}`} onClick={() => setOpen(false)}>{link.label}</a>)}<BlogLink onClick={() => setOpen(false)} /><button className="nav__book mobile-book" onClick={() => { setOpen(false); navigateTo("/book-a-call"); }}>Book a Call <span aria-hidden="true">→</span></button></nav>}</motion.header>;
 }
 
 function Hero() {
@@ -165,6 +172,9 @@ export default function App() {
   const [path, setPath] = useState(window.location.pathname);
   useEffect(() => { const onPopState = () => setPath(window.location.pathname); window.addEventListener("popstate", onPopState); return () => window.removeEventListener("popstate", onPopState); }, []);
   if (path === "/book-a-call") return <BookingPage />;
+  const blogPath = path.replace(/\/+$/, "");
+  if (blogPath === "/blog") return <><Navbar /><Suspense fallback={<main className="blog-loading" />}><BlogIndex navigate={navigateTo} /></Suspense><Footer /></>;
+  if (blogPath.startsWith("/blog/")) return <><Navbar /><Suspense fallback={<main className="blog-loading" />}><BlogPost key={blogPath} slug={decodeURIComponent(blogPath.slice(6))} navigate={navigateTo} /></Suspense><Footer /></>;
   return <><motion.div className="progress" style={{ scaleX }} /><Navbar /><main><Hero /><WhyIndia onBook={() => navigateTo("/book-a-call")} /><Services /><Approach /><Playbook /><Founder /></main><Footer /></>;
 }
 
@@ -180,7 +190,7 @@ function Footer() {
           <a href="/" className="site-footer__logo" onClick={(event) => { event.preventDefault(); navigateTo("/"); }}><img src="/logo.png" alt="Incubr" /></a>
           <p>Sprint incubation and India market entry for founders and global consumer brands.</p>
         </div>
-        <nav className="site-footer__col" aria-label="Explore"><h3>Explore</h3>{[...NAV_LINKS, { id: "playbook", label: "Playbook" }].map((link) => <a key={link.id} href={`/#${link.id}`}>{link.label}</a>)}</nav>
+        <nav className="site-footer__col" aria-label="Explore"><h3>Explore</h3>{[...NAV_LINKS, { id: "playbook", label: "Playbook" }].map((link) => <a key={link.id} href={`/#${link.id}`}>{link.label}</a>)}<BlogLink /></nav>
         <div className="site-footer__col"><h3>Services</h3><a href="/#services">India market entry</a><a href="/#services">Sprint incubation</a><a href="/#playbook">Market entry playbook</a></div>
         <div className="site-footer__col"><h3>Get in touch</h3><a href="mailto:products@incubr.com">products@incubr.com</a><a href="/book-a-call" onClick={(event) => { event.preventDefault(); navigateTo("/book-a-call"); }}>Book a call</a><span>India · UAE</span></div>
       </div>
