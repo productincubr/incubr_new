@@ -1,4 +1,5 @@
-// Blog articles. Each body is a list of blocks: ["h2", text] | ["p", text] | ["list", [items]] | ["quote", text].
+// Blog articles. Photos live in public/blog as <name>-800.webp and <name>-1600.webp, from Wikimedia Commons (credit: [author, licence, source page]).
+// Each body is a list of blocks: ["h2", text] | ["p", text] | ["list", [items]] | ["quote", text].
 // To add a post, copy one object, give it a new slug, and put it at the top of the list.
 export const POSTS = [
   {
@@ -7,7 +8,7 @@ export const POSTS = [
     excerpt: "A young population, rising incomes and digital-first shoppers make India one of the most exciting markets for consumer brands. Here is what that means if you are planning an entry.",
     category: "Market insight",
     date: "2026-10-20",
-    art: "globe",
+    image: { src: "/blog/why-india", w: 1600, h: 1067, tone: "#3a2a2c", position: "50% 55%", alt: "Mumbai skyline lit up at dusk, seen across the water from the beach", credit: ["Vyacheslav Argenberg", "CC BY 4.0", "https://commons.wikimedia.org/wiki/File:Mumbai,_India,_Bombay,_Mumbai_city_skyline_at_night.jpg"] },
     featured: true,
     body: [
       ["p", "For many global consumer brands, India has moved from \"one day\" to \"next on the list\". The reasons are not new, but they are now hard to ignore: the scale of the market, the age of its consumers, and how quickly those consumers have moved online."],
@@ -34,7 +35,7 @@ export const POSTS = [
     excerpt: "Big launches look impressive but burn budget fast. Here is why we start every India entry with one city, one channel and a focused range.",
     category: "Our approach",
     date: "2026-10-14",
-    art: "rings",
+    image: { src: "/blog/one-market", w: 1600, h: 1200, tone: "#5a4a3e", position: "50% 45%", alt: "A busy aisle of shops selling packaged food and sweets in Crawford Market, Mumbai", credit: ["Dudva", "CC0", "https://commons.wikimedia.org/wiki/File:Crawford_Market_in_Mumbai_4.jpg"] },
     body: [
       ["p", "A common plan for entering India looks like this: spend a year on research, launch the full range nationwide, and hope the market responds. It sounds ambitious. In practice it spreads money and attention so thin that it is hard to learn what is working."],
       ["h2", "Market entry is a contact sport"],
@@ -58,7 +59,7 @@ export const POSTS = [
     excerpt: "The product that wins at home rarely wins in India unchanged. A practical look at the three things most brands need to adapt.",
     category: "Playbook",
     date: "2026-10-07",
-    art: "packs",
+    image: { src: "/blog/localising", w: 1600, h: 824, tone: "#6b4a3c", position: "50% 50%", alt: "Supermarket shelves in India stacked with rice brands in different pack sizes and price points", credit: ["Smarthem", "CC0", "https://commons.wikimedia.org/wiki/File:Supermarket_Rice_Brands_02.jpg"] },
     body: [
       ["p", "Many global brands arrive in India with a strong product and a clear brand. The product itself is rarely the problem. What usually needs work is how it is priced, packed and positioned for Indian consumers."],
       ["h2", "1. Price for India, not for export"],
@@ -84,7 +85,7 @@ export const POSTS = [
     excerpt: "Founders often have a strong idea but no clear route to a finished product. Here is how a sprint takes a product from idea to launch-ready.",
     category: "For founders",
     date: "2026-09-30",
-    art: "sprint",
+    image: { src: "/blog/sprint", w: 1600, h: 1065, tone: "#c9c4bc", position: "50% 60%", alt: "A team working at desks in a bright coworking space in HSR Layout, Bengaluru", credit: ["Coworker2016", "CC BY-SA 4.0", "https://commons.wikimedia.org/wiki/File:BHIVE_Workspace_-_HSR_Bangalore.jpg"] },
     body: [
       ["p", "Turning a product idea into something you can actually sell means making many decisions: is there real demand, what exactly is the product, who will make it, how will it be branded and packed, and how will it reach customers? A sprint brings all of these together with one team."],
       ["h2", "Validate"],
