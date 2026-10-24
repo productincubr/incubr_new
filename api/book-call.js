@@ -1,69 +1,14 @@
-const allowedProfiles = new Set(["Global brand", "Founder / new product", "Investor / partner", "Other"]);
-const allowedTimelines = new Set(["Within 30 days", "1-3 months", "3-6 months", "Just exploring"]);
+import { handleBooking, setupStatus } from "./_lib/booking.js";
 
-function clean(value, maxLength) {
-  return typeof value === "string" ? value.trim().slice(0, maxLength) : "";
-}
-
-function json(response, status, payload) {
-  return response.status(status).json(payload);
-}
-
+// Vercel serverless function: POST sends a booking, GET reports whether email is set up.
 export default async function handler(request, response) {
-  if (request.method !== "POST") return json(response, 405, { message: "Method not allowed." });
-
-  const body = request.body || {};
-  const booking = {
-    fullName: clean(body.fullName, 100),
-    email: clean(body.email, 160).toLowerCase(),
-    company: clean(body.company, 160),
-    profile: clean(body.profile, 80),
-    timeline: clean(body.timeline, 80),
-    message: clean(body.message, 300),
-  };
-
-  if (!booking.fullName || !booking.company || !booking.email || !booking.profile || !booking.timeline) {
-    return json(response, 400, { message: "Please complete all required fields." });
+  if (request.method === "GET") return response.status(200).json(setupStatus());
+  if (request.method !== "POST") {
+    response.setHeader("Allow", "GET, POST");
+    return response.status(405).json({ message: "Method not allowed." });
   }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(booking.email)) {
-    return json(response, 400, { message: "Please enter a valid business email." });
-  }
-  if (!allowedProfiles.has(booking.profile)) return json(response, 400, { message: "Please choose a valid profile." });
-  if (!allowedTimelines.has(booking.timeline)) return json(response, 400, { message: "Please choose a valid timeline." });
-  if (!process.env.SENDGRID_API_KEY) {
-    return json(response, 500, { message: "Email service is not configured yet." });
-  }
-
-  const emailText = [
-    "New Incubr India Readiness Call request",
-    "",
-    `Name: ${booking.fullName}`,
-    `Email: ${booking.email}`,
-    `Company: ${booking.company}`,
-    `Profile: ${booking.profile}`,
-    `Timeline: ${booking.timeline}`,
-    `Message: ${booking.message || "Not provided"}`,
-  ].join("\n");
-
-  const emailResponse = await fetch("https://api.sendgrid.com/v3/mail/send", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${process.env.SENDGRID_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      personalizations: [{ to: [{ email: "products@incubr.com" }] }],
-      from: { email: process.env.SENDGRID_FROM_EMAIL || "products@incubr.com", name: "Incubr website" },
-      reply_to: { email: booking.email, name: booking.fullName },
-      subject: `India Readiness Call: ${booking.company}`,
-      content: [{ type: "text/plain", value: emailText }],
-    }),
-  });
-
-  if (!emailResponse.ok) {
-    const providerError = await emailResponse.text();
-    console.error("SendGrid rejected booking email:", emailResponse.status, providerError.slice(0, 500));
-    return json(response, 502, { message: "Email delivery is not configured correctly. Please contact the site administrator." });
-  }
-  return json(response, 201, { ok: true });
+  let body = request.body;
+  if (typeof body === "string") { try { body = JSON.parse(body); } catch { body = {}; } }
+  const [status, payload] = await handleBooking(body || {}, { page: request.headers.referer });
+  return response.status(status).json(payload);
 }
