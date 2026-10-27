@@ -1472,57 +1472,61 @@ body {
 .hero-new__proof {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(210px, .75fr) minmax(0, 1.9fr) minmax(220px, .85fr);
+  grid-template-columns: minmax(280px, 1.1fr) minmax(0, 1.8fr) minmax(230px, .9fr);
   align-items: center;
   gap: 40px;
   margin-top: 76px;
   padding-top: 44px;
-  border-top: 1px solid #aeb8c7;
 }
 
 .proof-count {
   position: relative;
-  text-align: center;
+  text-align: left;
+}
+
+/* Dot with a soft halo, then a short orange rule */
+.proof-count__mark {
+  display: flex;
+  align-items: center;
+  gap: 38px;
+  margin: 0 0 30px 14px;
 }
 
 .proof-count__glow {
-  position: absolute;
-  left: 6px;
-  top: 34px;
+  position: relative;
   width: 9px;
   height: 9px;
   border-radius: 50%;
   background: var(--orange);
-  box-shadow: 0 0 0 14px rgba(197, 84, 32, .08), 0 0 40px 22px rgba(197, 84, 32, .16);
+  box-shadow: 0 0 0 14px rgba(197, 84, 32, .1), 0 0 40px 22px rgba(197, 84, 32, .14);
 }
 
-.proof-count__num {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 14px;
-  font-family: var(--serif);
-  font-size: clamp(4.6rem, 7vw, 6rem);
-  line-height: 1;
-  letter-spacing: -.03em;
-  color: var(--blue);
-}
-
-.proof-count__num i {
+.proof-count__mark i {
   display: block;
-  width: 48px;
+  width: 64px;
   height: 2px;
   background: var(--orange);
-  margin-top: 6px;
+}
+
+.proof-count__title {
+  color: var(--blue);
+  font-family: var(--serif);
+  font-size: clamp(2.1rem, 2.7vw, 2.75rem);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -.02em;
+  white-space: nowrap;
 }
 
 .proof-count__label {
   display: block;
-  margin-top: 14px;
+  max-width: 320px;
+  margin-top: 20px;
   color: var(--ink-soft);
-  font-size: .8rem;
-  font-weight: 600;
+  font-size: .75rem;
+  font-weight: 500;
   letter-spacing: .26em;
+  line-height: 1.9;
   text-transform: uppercase;
 }
 
@@ -1725,8 +1729,8 @@ body {
     padding-top: 40px;
   }
 
-  .proof-count__glow {
-    left: 0;
+  .proof-count__title {
+    white-space: normal;
   }
 
   .proof-lead {
