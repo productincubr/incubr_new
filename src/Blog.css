@@ -180,7 +180,7 @@
   .blog-featured { min-height: 520px; border-radius: 18px; }
   .blog-featured__body { gap: 12px; padding: 22px 20px 24px; }
   .blog-featured p { font-size: .9375rem; }
-  .blog-featured__cta { width: 100%; justify-content: space-between; }
+  .blog-featured__cta { width: 100%; justify-content: center; }
   /* Text covers more of the photo on phones, so the shade starts higher */
   .blog-featured__shade { background: linear-gradient(180deg, rgba(10, 16, 28, .05) 0%, rgba(10, 16, 28, .72) 34%, rgba(10, 16, 28, .95) 100%); }
   .blog-tools { display: grid; grid-template-columns: minmax(0, 1fr); }
@@ -191,7 +191,7 @@
   .blog-grid, .blog-grid--two { grid-template-columns: minmax(0, 1fr); gap: 18px; }
   .blog-list { padding-bottom: 72px; }
   .blog-band { margin-top: 44px; }
-  .blog-band .blog-btn { width: 100%; justify-content: space-between; }
+  .blog-band .blog-btn { width: 100%; justify-content: center; }
   .blog-post__hero { min-height: 480px; border-radius: 18px; }
   .blog-post__intro { padding: 22px 20px 26px; }
   .blog-credit--hero { text-align: left; }

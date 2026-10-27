@@ -119,7 +119,6 @@ const ICONS = {
   book: <svg {...ic}><path d="M12 6.5C10 5 7 4.5 3.5 5v13.5C7 18 10 18.5 12 20c2-1.5 5-2 8.5-1.5V5C17 4.5 14 5 12 6.5zM12 6.5V20" /></svg>,
   bowl: <svg {...ic}><path d="M3.5 12h17a8.5 8.5 0 0 1-17 0zM9 20.3h6" /><path d="M12 12c0-3 1.5-5.5 4.5-6.5-.2 3-1.8 5.5-4.5 6.5zM12 12c-.5-2-2-3.5-4-4 .2 2 1.6 3.5 4 4z" /></svg>,
 };
-const ARROW = <span className="why-btn__arrow" aria-hidden="true">→</span>;
 
 function useNarrow(query = "(max-width: 760px)") {
   const [narrow, setNarrow] = useState(() => typeof window !== "undefined" && window.matchMedia(query).matches);
@@ -230,8 +229,8 @@ export default function WhyIndia({ onBook }) {
       </div>
 
       <div className="why-cta" data-in>
-        <button type="button" className="why-btn why-btn--primary" onClick={onBook}>Book an India Readiness Call {ARROW}</button>
-        <a className="why-btn why-btn--ghost" href="#services">Explore services {ARROW}</a>
+        <button type="button" className="why-btn why-btn--primary" onClick={onBook}>Book an India Readiness Call</button>
+        <a className="why-btn why-btn--ghost" href="#services">Explore services</a>
       </div>
 
       <div className="why-stats">

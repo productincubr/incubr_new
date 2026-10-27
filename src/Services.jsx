@@ -58,8 +58,8 @@ export default function Services() {
     <div className="container">
       <motion.div className="svc-head" initial="hidden" whileInView="show" viewport={view} variants={stagger(0.12)}>
         <motion.span className="svc-eyebrow" variants={up}>Services</motion.span>
-        <motion.h2 variants={up}>Two ways to work with Incubr</motion.h2>
-        <motion.p variants={up}>Different starting points. One team to take your product from opportunity to market.</motion.p>
+        <motion.h2 variants={up}>Two ways to build<br />with Incubr</motion.h2>
+        <motion.p variants={up}>Whether you’re starting with an idea or ready to scale a product, we bring the strategy, creativity, and execution to turn opportunities into market-ready brands.</motion.p>
       </motion.div>
 
       <motion.div className="svc-cards" initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.15 }} variants={stagger(0.18)}>
@@ -76,7 +76,7 @@ export default function Services() {
             </motion.li>)}
           </motion.ul>
           <button type="button" className={`svc-btn ${offer.solid ? "svc-btn--solid" : "svc-btn--line"}`} onClick={() => navigate(`/book-a-call?profile=${encodeURIComponent(offer.profile)}`)}>
-            {offer.cta}<span className="svc-btn__arrow" aria-hidden="true">→</span>
+            {offer.cta}
           </button>
         </motion.article>)}
       </motion.div>
@@ -87,7 +87,7 @@ export default function Services() {
           <span>Not sure which path is right for you?</span>
           <p>Tell us what you're building or where you want to expand. We'll help you find the right starting point.</p>
         </div>
-        <button type="button" className="svc-btn svc-btn--solid svc-help__btn" onClick={() => navigate("/book-a-call")}>Let's talk<span className="svc-btn__arrow" aria-hidden="true">→</span></button>
+        <button type="button" className="svc-btn svc-btn--solid svc-help__btn" onClick={() => navigate("/book-a-call")}>Let's talk</button>
         <Note lines={["A short conversation", "can save you months."]} className="svc-note--help" delay={0.5} arrow={["M58 22C44 18 28 20 8 26", "M8 26l8-6M8 26l9 3"]} />
       </motion.div>
     </div>

@@ -1324,7 +1324,7 @@ body {
 
 .hero-new__content .eyebrow {
   margin-bottom: 24px;
-  font-size: .72rem;
+  font-size: .95rem;
 }
 
 .hero-new h1 {
@@ -2367,7 +2367,7 @@ body {
 
   .site-footer__cta .btn {
     width: 100%;
-    justify-content: space-between;
+    justify-content: center;
   }
 
   .site-footer__grid {
@@ -2675,7 +2675,7 @@ body {
 
   .fdr__cta .btn {
     width: 100%;
-    justify-content: space-between;
+    justify-content: center;
   }
 }
 
@@ -3495,7 +3495,7 @@ body {
   .hero-new__content .eyebrow {
     max-width: 320px;
     margin-bottom: 24px;
-    font-size: .66rem;
+    font-size: .8125rem;
     line-height: 1.65;
   }
 
@@ -3520,7 +3520,7 @@ body {
   .hero-new__actions .btn {
     width: 100%;
     min-height: 54px;
-    justify-content: space-between;
+    justify-content: center;
     padding: 16px 20px;
     font-size: 1rem;
     border-radius: 3px;
@@ -3867,4 +3867,18 @@ body {
   width: 1px;
   height: 1px;
   overflow: hidden;
+}
+
+/* Section labels (Playbook, Founder): larger and easier to read */
+.section-head > .eyebrow:not(.approach-pill),
+.fdr__body .eyebrow {
+  font-size: .9375rem;
+  letter-spacing: .2em;
+}
+
+@media (max-width: 700px) {
+  .section-head > .eyebrow:not(.approach-pill),
+  .fdr__body .eyebrow {
+    font-size: .8125rem;
+  }
 }

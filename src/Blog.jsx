@@ -92,7 +92,7 @@ function BookBand({ navigate }) {
   return <motion.aside className="blog-band" initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.4 }} variants={stagger}>
     <span className="blog-band__ring" aria-hidden="true" />
     <motion.div variants={up}><span className="blog-eyebrow">Planning an India launch?</span><h2>Turn these ideas into a plan for your brand.</h2></motion.div>
-    <motion.button variants={up} type="button" className="blog-btn" onClick={() => navigate("/book-a-call")}>Book an India Readiness Call <span aria-hidden="true">→</span></motion.button>
+    <motion.button variants={up} type="button" className="blog-btn" onClick={() => navigate("/book-a-call")}>Book an India Readiness Call</motion.button>
   </motion.aside>;
 }
 
@@ -115,7 +115,7 @@ function Featured({ post, navigate }) {
         <span className="blog-featured__label"><b>Featured</b>{post.category}</span>
         <h2>{post.title}</h2>
         <p>{post.excerpt}</p>
-        <div className="blog-featured__foot"><Meta post={post} /><span className="blog-featured__cta">Read article <span aria-hidden="true">→</span></span></div>
+        <div className="blog-featured__foot"><Meta post={post} /><span className="blog-featured__cta">Read article</span></div>
       </div>
     </Link>
   </motion.div>;
@@ -229,7 +229,7 @@ export function BlogPost({ slug, navigate }) {
   const { scrollYProgress } = useScroll();
   const progress = useSpring(scrollYProgress, { stiffness: 140, damping: 30 });
 
-  if (!post) return <main className="blog blog-missing"><div className="container"><span className="blog-eyebrow">404</span><h1>We couldn't find that article.</h1><Link to="/blog" navigate={navigate} className="blog-btn">Back to the blog <span aria-hidden="true">→</span></Link></div></main>;
+  if (!post) return <main className="blog blog-missing"><div className="container"><span className="blog-eyebrow">404</span><h1>We couldn't find that article.</h1><Link to="/blog" navigate={navigate} className="blog-btn">Back to the blog</Link></div></main>;
 
   const index = POSTS.indexOf(post);
   const related = [...POSTS.slice(index + 1), ...POSTS.slice(0, index)].slice(0, 2);

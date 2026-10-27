@@ -51,8 +51,6 @@
 .why-btn--primary:hover { background: #cc5f2c; border-color: #cc5f2c; }
 .why-btn--ghost { border: 1px solid rgba(255, 255, 255, .55); background: transparent; color: var(--why-text); }
 .why-btn--ghost:hover { border-color: #fff; background: rgba(255, 255, 255, .06); }
-.why-btn__arrow { display: inline-block; transition: transform .35s cubic-bezier(.22, 1, .36, 1); }
-.why-btn:hover .why-btn__arrow { transform: translateX(5px); }
 .why-btn:focus-visible { outline: 2px solid #ffd2b0; outline-offset: 3px; }
 
 /* Categories */
@@ -159,7 +157,7 @@
   .why-head p { margin-top: 16px; font-size: 1rem; line-height: 1.6; }
 
   .why-cta { grid-template-columns: minmax(0, 1fr); gap: 12px; max-width: none; margin-top: 28px; }
-  .why-btn { width: 100%; min-height: 54px; justify-content: space-between; padding: 14px 20px; white-space: normal; text-align: left; }
+  .why-btn { width: 100%; min-height: 54px; padding: 14px 20px; white-space: normal; text-align: center; }
 
   .why-stats { margin-top: 36px; border-top: 1px solid var(--why-line); }
   .why-stat, .why-stat:nth-child(even) { grid-template-columns: minmax(0, 1fr); gap: 12px; padding: 20px 14px 20px 0; }
