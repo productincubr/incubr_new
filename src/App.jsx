@@ -173,8 +173,10 @@ export default function App() {
   const scaleX = useSpring(scrollYProgress, { stiffness: 120, damping: 30 });
   const [path, setPath] = useState(window.location.pathname);
   useEffect(() => { const onPopState = () => setPath(window.location.pathname); window.addEventListener("popstate", onPopState); return () => window.removeEventListener("popstate", onPopState); }, []);
-  if (path === "/book-a-call") return <BookingPage />;
-  const blogPath = path.replace(/\/+$/, "");
+  // Static hosts may add a trailing slash (/book-a-call/), so compare without it.
+  const route = path.replace(/\/+$/, "") || "/";
+  if (route === "/book-a-call") return <BookingPage />;
+  const blogPath = route;
   if (blogPath === "/blog") return <><Navbar /><Suspense fallback={<main className="blog-loading" />}><BlogIndex navigate={navigateTo} /></Suspense><Footer /></>;
   if (blogPath.startsWith("/blog/")) return <><Navbar /><Suspense fallback={<main className="blog-loading" />}><BlogPost key={blogPath} slug={decodeURIComponent(blogPath.slice(6))} navigate={navigateTo} /></Suspense><Footer /></>;
   return <><motion.div className="progress" style={{ scaleX }} /><Navbar /><main><Hero /><WhyIndia onBook={() => navigateTo("/book-a-call")} /><Services /><Approach /><Playbook /><Founder /></main><Footer /></>;
